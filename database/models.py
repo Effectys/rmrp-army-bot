@@ -207,13 +207,27 @@ class RoleRequest(Document):
             e.add_field(name="Статик", value=format_game_id(self.data.static_id))
         elif self.extended_data:
             e.add_field(name="Имя Фамилия", value=self.extended_data.full_name)
-            e.add_field(name="Статик", value=format_game_id(self.extended_data.static_id))
+            e.add_field(
+                name="Статик", value=format_game_id(self.extended_data.static_id)
+            )
             e.add_field(name="Фракция", value=self.extended_data.faction, inline=False)
-            e.add_field(name="Звание, должность", value=self.extended_data.rank_position, inline=False)
+            e.add_field(
+                name="Звание, должность",
+                value=self.extended_data.rank_position,
+                inline=False,
+            )
             if self.extended_data.purpose:
-                e.add_field(name="Цель и удостоверение", value=self.extended_data.purpose, inline=False)
+                e.add_field(
+                    name="Цель и удостоверение",
+                    value=self.extended_data.purpose,
+                    inline=False,
+                )
             if self.extended_data.certificate_link:
-                e.add_field(name="Удостоверение", value=self.extended_data.certificate_link, inline=False)
+                e.add_field(
+                    name="Удостоверение",
+                    value=self.extended_data.certificate_link,
+                    inline=False,
+                )
 
         e.set_footer(text="Отправлено")
         return e

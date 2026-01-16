@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 closed_requests = set()
 
+
 async def open_modal(interaction: discord.Interaction, d_type: DismissalType):
     user_db = await User.find_one(User.discord_id == interaction.user.id)
     if not user_db:
@@ -240,12 +241,18 @@ class DismissalManagementButton(
                     bl_embed = discord.Embed(
                         title="📋 Автоматический ЧС", color=discord.Color.dark_red()
                     )
-                    bl_embed.set_author(
-                        name=f"Составитель: {officer.full_name} | {format_game_id(officer.static)}"
+                    author_name = (
+                        f"Составитель: {officer.full_name} | "
+                        f"{format_game_id(officer.static)}"
+                    )
+                    bl_embed.set_author(name=author_name)
+                    citizen_value = (
+                        f"<@{req.user_id}> {target_user_db.full_name} | "
+                        f"{format_game_id(target_user_db.static)}"
                     )
                     bl_embed.add_field(
                         name="Гражданин",
-                        value=f"<@{req.user_id}> {target_user_db.full_name} | {format_game_id(target_user_db.static)}",
+                        value=citizen_value,
                         inline=False,
                     )
                     bl_embed.add_field(name="Причина", value="Неустойка", inline=False)

@@ -89,9 +89,11 @@ class AuditLogger:
             colour=action_colors[action],
             timestamp=discord.utils.utcnow(),
         )
-        embed.set_author(
-            name=f"Составитель: {initiator_info.full_name} | {format_game_id(initiator_info.static)}"
+        author_name = (
+            f"Составитель: {initiator_info.full_name} | "
+            f"{format_game_id(initiator_info.static)}"
         )
+        embed.set_author(name=author_name)
         embed.add_field(
             name="Военнослужащий",
             value=f"{target_info.full_name} `{format_game_id(target_info.static)}`"
@@ -100,9 +102,11 @@ class AuditLogger:
             inline=False,
         )
         if target_info and target_info.rank is not None:
+            rank_emoji = config.RANK_EMOJIS[target_info.rank]
+            rank_name = config.RANKS[target_info.rank]
             embed.add_field(
                 name="Звание",
-                value=f"{config.RANK_EMOJIS[target_info.rank]} {config.RANKS[target_info.rank]}",
+                value=f"{rank_emoji} {rank_name}",
                 inline=False,
             )
         if target_info and target_info.division is not None:

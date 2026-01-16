@@ -12,7 +12,7 @@ from database import divisions
 from database.models import ReinstatementRequest, User
 from ui.views.indicators import indicator_view
 from utils.audit import AuditAction, audit_logger
-from utils.roles import to_division, to_rank
+from utils.roles import to_division, to_position, to_rank
 from utils.user_data import get_full_name, update_user_name_if_changed
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,8 @@ async def button_callback(interaction: discord.Interaction):
     user = await User.find_one(User.discord_id == interaction.user.id)
     if not user or user.rank is None:
         await interaction.response.send_message(
-            "### Вы не состоите на службе и не можете подать заявление на восстановление.",
+            "### Вы не состоите на службе "
+            "и не можете подать заявление на восстановление.",
             ephemeral=True,
         )
         return
@@ -113,7 +114,9 @@ class ReinstatementRankSelect(
 
         user.rank = request.rank
         user.division = 0
-        await update_user_name_if_changed(user, request.data.full_name, interaction.user)
+        await update_user_name_if_changed(
+            user, request.data.full_name, interaction.user
+        )
         await user.save()
 
         user_discord = await interaction.client.getch_member(request.user)
@@ -127,6 +130,7 @@ class ReinstatementRankSelect(
         ]
         new_user_roles = to_division(new_user_roles, user.division)
         new_user_roles = to_rank(new_user_roles, user.rank)
+        new_user_roles = to_position(new_user_roles, user.division, user.position)
 
         await user_discord.edit(
             nick=user.discord_nick,
@@ -203,8 +207,9 @@ class ApproveReinstatementButton(
         view.add_item(RejectReinstatementButton(request_id=self.request_id))
 
         await interaction.response.edit_message(
-            content=f'-# ||<@{request.user}> <@{interaction.user.id}>||',
-            embed=await request.to_embed(), view=view
+            content=f"-# ||<@{request.user}> <@{interaction.user.id}>||",
+            embed=await request.to_embed(),
+            view=view,
         )
 
 

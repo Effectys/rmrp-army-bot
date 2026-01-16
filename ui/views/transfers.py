@@ -12,7 +12,7 @@ from database import divisions
 from database.models import Division, TransferRequest, User
 from ui.views.indicators import indicator_view
 from utils.audit import AuditAction, audit_logger
-from utils.roles import to_division
+from utils.roles import to_division, to_position
 
 
 class TransferView(discord.ui.LayoutView):
@@ -21,19 +21,19 @@ class TransferView(discord.ui.LayoutView):
         self.division = division
 
         container = discord.ui.Container()
-        container.add_item(
-            discord.ui.TextDisplay(
-                f"## {self.division.emoji} {self.division.name} ({self.division.abbreviation})\n"
-                f"{self.division.description}"
-            )
+        header_text = (
+            f"## {self.division.emoji} {self.division.name} "
+            f"({self.division.abbreviation})\n"
+            f"{self.division.description}"
         )
-        container.add_item(
-            discord.ui.TextDisplay(
-                "### Важная информация:\n"
-                "- Тщательно выбирайте подразделение. Не получится подать заявления в разные подразделения одновременно.\n"
-                "- Заявление может рассматриватся до 72 часов."
-            )
+        container.add_item(discord.ui.TextDisplay(header_text))
+        info_text = (
+            "### Важная информация:\n"
+            "- Тщательно выбирайте подразделение. "
+            "Не получится подать заявления в разные подразделения одновременно.\n"
+            "- Заявление может рассматриватся до 72 часов."
         )
+        container.add_item(discord.ui.TextDisplay(info_text))
         container.add_item(discord.ui.Separator())
 
         a_row = discord.ui.ActionRow()
@@ -88,7 +88,8 @@ class TransferApply(
         )
         if opened_request is not None:
             await interaction.response.send_message(
-                "### У вас уже есть открытое заявление на рассмотрении.\nОжидайте его рассмотрения.",
+                "### У вас уже есть открытое заявление на рассмотрении.\n"
+                "Ожидайте его рассмотрения.",
                 ephemeral=True,
             )
             return
@@ -96,7 +97,8 @@ class TransferApply(
         user = await User.find_one(User.discord_id == interaction.user.id)
         if user and user.division == self.division.division_id:
             await interaction.response.send_message(
-                f"### Вы уже состоите в подразделении {self.division.abbreviation}. Подача заявления невозможна.",
+                f"### Вы уже состоите в подразделении "
+                f"{self.division.abbreviation}. Подача заявления невозможна.",
                 ephemeral=True,
             )
             return
@@ -246,6 +248,7 @@ class ApproveTransferButton(
 
         user_discord = await interaction.client.getch_member(request.user_id)
         new_roles = to_division(user_discord.roles, self.division.division_id)
+        new_roles = to_position(new_roles, user.division, user.position)
         await user_discord.edit(
             nick=user.discord_nick,
             roles=new_roles,

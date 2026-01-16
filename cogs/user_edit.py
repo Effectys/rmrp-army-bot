@@ -10,7 +10,7 @@ from config import RANK_EMOJIS, RANKS
 from database import divisions
 from database.models import User
 from utils.audit import AuditAction, audit_logger
-from utils.roles import to_division, to_rank
+from utils.roles import to_division, to_position, to_rank
 from utils.user_data import format_game_id
 
 logger = logging.getLogger(__name__)
@@ -48,7 +48,8 @@ class UserEdit(commands.Cog):
 
         if (editor_db.rank or 0) < 11:
             await interaction.response.send_message(
-                f"❌ Доступ к управлению кадрами разрешен со звания {RANK_EMOJIS[11]} {RANKS[11]}.",
+                f"❌ Доступ к управлению кадрами разрешен "
+                f"со звания {RANK_EMOJIS[11]} {RANKS[11]}.",
                 ephemeral=True,
             )
             return False
@@ -56,7 +57,8 @@ class UserEdit(commands.Cog):
         if target_user_db.rank is not None:
             if (editor_db.rank or 0) <= target_user_db.rank:
                 await interaction.response.send_message(
-                    "❌ Вы не можете редактировать пользователей равного или старшего звания.",
+                    "❌ Вы не можете редактировать пользователей "
+                    "равного или старшего звания.",
                     ephemeral=True,
                 )
                 return False
@@ -75,6 +77,8 @@ class UserEdit(commands.Cog):
             if user_info.rank is not None:
                 roles = to_rank(roles, user_info.rank)
 
+            roles = to_position(roles, user_info.division, user_info.position)
+
             if user_info.rank is None:
                 full_name = user_info.full_name or user_info.short_name or "Неизвестный"
                 new_nick = f"Уволен | {full_name}"
@@ -92,7 +96,10 @@ class UserEdit(commands.Cog):
 
         except discord.Forbidden:
             try:
-                msg = "⚠️ Данные сохранены, но не удалось обновить Discord-профиль (не хватает прав или иерархия ролей)."
+                msg = (
+                    "⚠️ Данные сохранены, но не удалось обновить Discord-профиль "
+                    "(не хватает прав или иерархия ролей)."
+                )
                 if interaction.response.is_done():
                     await interaction.followup.send(msg, ephemeral=True)
                 else:
@@ -194,7 +201,7 @@ class UserEdit(commands.Cog):
             action = AuditAction.DEMOTED
 
         await audit_logger.log_action(action, interaction.user, user)
-        
+
         rank_name = config.RANKS[user_info.rank]
         await interaction.response.send_message(
             f"📈 {user.mention} повышен до звания **{rank_name}**.", ephemeral=True
@@ -367,6 +374,8 @@ class UserEdit(commands.Cog):
                         AuditAction.POSITION_CHANGED, modal_interaction.user, user
                     )
 
+                await self._sync_member_discord(modal_interaction, user, user_info)
+
                 await modal_interaction.response.edit_message(
                     view=self.build_view(user, user_info)
                 )
@@ -492,7 +501,8 @@ class UserEdit(commands.Cog):
                                 <= target_pos_obj.privilege.value
                             ):
                                 await interaction.response.send_message(
-                                    "❌ Вы не можете назначить должность с привилегиями выше или равными вашим.",
+                                    "❌ Вы не можете назначить должность "
+                                    "с привилегиями выше или равными вашим.",
                                     ephemeral=True,
                                 )
                                 return
@@ -505,6 +515,8 @@ class UserEdit(commands.Cog):
                     await audit_logger.log_action(
                         AuditAction.POSITION_CHANGED, interaction.user, user
                     )
+
+                await self._sync_member_discord(interaction, user, user_info)
 
                 await interaction.response.edit_message(
                     view=self.build_view(user, user_info)

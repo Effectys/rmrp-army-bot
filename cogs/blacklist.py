@@ -12,12 +12,14 @@ from utils.user_data import format_game_id
 
 channel_id = config.CHANNELS["blacklist"]
 
+
 def have_permissions(initiator: User, target: User) -> bool:
     if initiator.rank is None or initiator.rank < config.RankIndex.CAPTAIN:
         return False
     if target.rank is not None and target.rank >= initiator.rank:
         return False
     return True
+
 
 class Blacklist(commands.Cog):
     def __init__(self, bot: Bot):
@@ -79,9 +81,11 @@ class Blacklist(commands.Cog):
             color=discord.Color.dark_red(),
             timestamp=datetime.datetime.now(),
         )
-        embed.set_author(
-            name=f"Составитель: {initiator.full_name} | {format_game_id(initiator.static)}"
+        author_name = (
+            f"Составитель: {initiator.full_name} | "
+            f"{format_game_id(initiator.static)}"
         )
+        embed.set_author(name=author_name)
         embed.add_field(
             name="Гражданин",
             value=f"{db_user.full_name} | {format_game_id(db_user.static)}",
@@ -91,16 +95,18 @@ class Blacklist(commands.Cog):
         embed.add_field(name="Доказательства", value=evidence, inline=False)
 
         if days > 0:
+            ends_at_fmt = discord.utils.format_dt(blacklist.ends_at, style='d')
             embed.add_field(
                 name="Срок",
-                value=f"{days} дней (до {discord.utils.format_dt(blacklist.ends_at, style='d')})",
+                value=f"{days} дней (до {ends_at_fmt})",
                 inline=False,
             )
         else:
             embed.add_field(name="Срок", value="Бессрочно", inline=False)
 
+        mentions = ' '.join(f'<@&{m}>' for m in config.BLACKLIST_MENTIONS)
         await self.bot.get_channel(channel_id).send(
-            f"-# ||{user.mention} {interaction.user.mention} {' '.join(f'<@&{mention}>' for mention in config.BLACKLIST_MENTIONS)}||",
+            f"-# ||{user.mention} {interaction.user.mention} {mentions}||",
             embed=embed,
         )
 
@@ -155,9 +161,11 @@ class Blacklist(commands.Cog):
             color=discord.Color.dark_green(),
             timestamp=datetime.datetime.now(),
         )
-        embed.set_author(
-            name=f"Составитель: {initiator.full_name} | {format_game_id(initiator.static)}"
+        author_name = (
+            f"Составитель: {initiator.full_name} | "
+            f"{format_game_id(initiator.static)}"
         )
+        embed.set_author(name=author_name)
         embed.add_field(
             name="Гражданин",
             value=f"{db_user.full_name} | {format_game_id(db_user.static)}",

@@ -30,11 +30,13 @@ class RoleRequestModal(discord.ui.Modal, title="Заявление на полу
 
     async def on_submit(self, interaction: discord.Interaction):
         opened_request = await RoleRequest.find_one(
-            RoleRequest.user == interaction.user.id, RoleRequest.checked == False
+            RoleRequest.user == interaction.user.id,
+            RoleRequest.checked == False,  # noqa: E712
         )
         if opened_request is not None:
             await interaction.response.send_message(
-                "### У вас уже есть открытое заявление на рассмотрении.\nОжидайте его рассмотрения.",
+                "### У вас уже есть открытое заявление на рассмотрении.\n"
+                "Ожидайте его рассмотрения.",
                 ephemeral=True,
             )
             return
@@ -43,7 +45,8 @@ class RoleRequestModal(discord.ui.Modal, title="Заявление на полу
             static_id = formatted_static_to_int(self.static_id.component.value)
         except (ValueError, TypeError):
             await interaction.response.send_message(
-                "### Вы ввели некорректный статик. Правильный формат: ХХХ-ХХХ. Пример: 537-328.",
+                "### Вы ввели некорректный статик. "
+                "Правильный формат: ХХХ-ХХХ. Пример: 537-328.",
                 ephemeral=True,
             )
             return
@@ -101,11 +104,13 @@ class SupplyAccessModal(discord.ui.Modal, title="Заявление на дос�
 
     async def on_submit(self, interaction: discord.Interaction):
         opened_request = await RoleRequest.find_one(
-            RoleRequest.user == interaction.user.id, RoleRequest.checked == False
+            RoleRequest.user == interaction.user.id,
+            RoleRequest.checked == False,  # noqa: E712
         )
         if opened_request is not None:
             await interaction.response.send_message(
-                "### У вас уже есть открытое заявление на рассмотрении.\nОжидайте его рассмотрения.",
+                "### У вас уже есть открытое заявление на рассмотрении.\n"
+                "Ожидайте его рассмотрения.",
                 ephemeral=True,
             )
             return
@@ -114,7 +119,8 @@ class SupplyAccessModal(discord.ui.Modal, title="Заявление на дос�
             static_id = formatted_static_to_int(self.static_id.value)
         except (ValueError, TypeError):
             await interaction.response.send_message(
-                "### Вы ввели некорректный статик. Правильный формат: ХХХ-ХХХ. Пример: 537-328.",
+                "### Вы ввели некорректный статик. "
+                "Правильный формат: ХХХ-ХХХ. Пример: 537-328.",
                 ephemeral=True,
             )
             return
@@ -187,11 +193,13 @@ class GovEmployeeModal(discord.ui.Modal, title="Заявление на роль
 
     async def on_submit(self, interaction: discord.Interaction):
         opened_request = await RoleRequest.find_one(
-            RoleRequest.user == interaction.user.id, RoleRequest.checked == False
+            RoleRequest.user == interaction.user.id,
+            RoleRequest.checked == False,  # noqa: E712
         )
         if opened_request is not None:
             await interaction.response.send_message(
-                "### У вас уже есть открытое заявление на рассмотрении.\nОжидайте его рассмотрения.",
+                "### У вас уже есть открытое заявление на рассмотрении.\n"
+                "Ожидайте его рассмотрения.",
                 ephemeral=True,
             )
             return
@@ -200,7 +208,8 @@ class GovEmployeeModal(discord.ui.Modal, title="Заявление на роль
             static_id = formatted_static_to_int(self.static_id.value)
         except (ValueError, TypeError):
             await interaction.response.send_message(
-                "### Вы ввели некорректный статик. Правильный формат: ХХХ-ХХХ. Пример: 537-328.",
+                "### Вы ввели некорректный статик. "
+                "Правильный формат: ХХХ-ХХХ. Пример: 537-328.",
                 ephemeral=True,
             )
             return

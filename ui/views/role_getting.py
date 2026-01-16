@@ -16,6 +16,7 @@ from utils.user_data import format_game_id, update_user_name_if_changed
 
 closed_requests = set()
 
+
 async def _get_user_defaults(interaction: discord.Interaction):
     """Получить данные пользователя для заполнения формы."""
     user = await User.find_one(User.discord_id == interaction.user.id)
@@ -31,11 +32,13 @@ async def _get_user_defaults(interaction: discord.Interaction):
 async def _check_can_apply(interaction: discord.Interaction) -> bool:
     """Проверить, может ли пользователь подать заявку."""
     opened_request = await RoleRequest.find_one(
-        RoleRequest.user == interaction.user.id, RoleRequest.checked == False
+        RoleRequest.user == interaction.user.id,
+        RoleRequest.checked == False,  # noqa: E712
     )
     if opened_request is not None:
         await interaction.response.send_message(
-            "### У вас уже есть открытое заявление на рассмотрении.\nОжидайте его рассмотрения.",
+            "### У вас уже есть открытое заявление на рассмотрении.\n"
+            "Ожидайте его рассмотрения.",
             ephemeral=True,
         )
         return False
@@ -43,7 +46,8 @@ async def _check_can_apply(interaction: discord.Interaction) -> bool:
     user = await User.find_one(User.discord_id == interaction.user.id)
     if user and user.blacklist:
         await interaction.response.send_message(
-            f"### Вы не можете подать заявление на роль, так как на вас наложен черный список.\n"
+            "### Вы не можете подать заявление на роль, "
+            "так как на вас наложен черный список.\n"
             f"Дата окончания: {discord.utils.format_dt(user.blacklist.ends_at, 'd')}.",
             ephemeral=True,
         )
@@ -141,9 +145,9 @@ class RoleApplyView(discord.ui.LayoutView):
 def get_required_rank(role_type: RoleType) -> int:
     """Получить минимальное звание для одобрения заявки."""
     ranks = {
-        RoleType.ARMY: config.RankIndex.JUNIOR_LIEUTENANT,  # Мл. Лейтенант (8)
-        RoleType.SUPPLY_ACCESS: config.RankIndex.LIEUTENANT_COLONEL,  # Подполковник (13)
-        RoleType.GOV_EMPLOYEE: config.RankIndex.COLONEL,  # Полковник (14)
+        RoleType.ARMY: config.RankIndex.JUNIOR_LIEUTENANT,
+        RoleType.SUPPLY_ACCESS: config.RankIndex.LIEUTENANT_COLONEL,
+        RoleType.GOV_EMPLOYEE: config.RankIndex.COLONEL,
     }
     return ranks.get(role_type, config.RankIndex.COLONEL)
 
@@ -216,7 +220,8 @@ class ApproveRoleButton(
             }
             required = role_names.get(request.role_type, "Полковник")
             await interaction.response.send_message(
-                f"У вас нет прав для одобрения этой заявки. Требуется звание: {required}+",
+                f"У вас нет прав для одобрения этой заявки. "
+                f"Требуется звание: {required}+",
                 ephemeral=True,
             )
             return
@@ -258,10 +263,7 @@ class ApproveRoleButton(
                 config.RANK_ROLES[config.RANKS[0]],
                 config.RoleId.MILITARY_ACADEMY.value,
             ]
-            roles_to_add = [
-                interaction.guild.get_role(role_id)
-                for role_id in role_ids
-            ]
+            roles_to_add = [interaction.guild.get_role(role_id) for role_id in role_ids]
             new_roles = [
                 role for role in user_discord.roles if role.id not in role_ids
             ] + [role for role in roles_to_add if role is not None]
@@ -283,18 +285,24 @@ class ApproveRoleButton(
             if not user:
                 user = User(discord_id=request.user)
                 await user.save()
-            await update_user_name_if_changed(user, request.extended_data.full_name, interaction.user)
+            await update_user_name_if_changed(
+                user, request.extended_data.full_name, interaction.user
+            )
 
             role = interaction.guild.get_role(config.RoleId.SUPPLY_ACCESS.value)
             new_roles = list(user_discord.roles)
             if role:
                 new_roles.append(role)
             # Ник: Фракция | Имя Фамилия
-            new_nick = f"{request.extended_data.faction} | {request.extended_data.full_name}"[:32]
+            new_nick = (
+                f"{request.extended_data.faction} | {request.extended_data.full_name}"[
+                    :32
+                ]
+            )
             await user_discord.edit(
                 nick=new_nick,
                 roles=new_roles,
-                reason=f"Одобрено получение роли Доступ к поставке by {interaction.user.id}",
+                reason=f"Одобрено роль Доступ к поставке by {interaction.user.id}",
             )
 
         elif request.role_type == RoleType.GOV_EMPLOYEE:
@@ -303,18 +311,24 @@ class ApproveRoleButton(
             if not user:
                 user = User(discord_id=request.user)
                 await user.save()
-            await update_user_name_if_changed(user, request.extended_data.full_name, interaction.user)
+            await update_user_name_if_changed(
+                user, request.extended_data.full_name, interaction.user
+            )
 
             role = interaction.guild.get_role(config.RoleId.GOV_EMPLOYEE.value)
             new_roles = list(user_discord.roles)
             if role:
                 new_roles.append(role)
             # Ник: Фракция | Имя Фамилия
-            new_nick = f"{request.extended_data.faction} | {request.extended_data.full_name}"[:32]
+            new_nick = (
+                f"{request.extended_data.faction} | {request.extended_data.full_name}"[
+                    :32
+                ]
+            )
             await user_discord.edit(
                 nick=new_nick,
                 roles=new_roles,
-                reason=f"Одобрено получение роли Гос. сотрудник by {interaction.user.id}",
+                reason=f"Одобрено роль Гос. сотрудник by {interaction.user.id}",
             )
 
 
@@ -357,7 +371,8 @@ class RejectRoleButton(
             }
             required = role_names.get(request.role_type, "Полковник")
             await interaction.response.send_message(
-                f"У вас нет прав для отклонения этой заявки. Требуется звание: {required}+",
+                f"У вас нет прав для отклонения этой заявки. "
+                f"Требуется звание: {required}+",
                 ephemeral=True,
             )
             return

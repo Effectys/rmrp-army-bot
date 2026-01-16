@@ -23,11 +23,12 @@ class ReinstatementModal(discord.ui.Modal, title="Заявление на вос
     async def on_submit(self, interaction: discord.Interaction):
         opened_request = await ReinstatementRequest.find_one(
             ReinstatementRequest.user == interaction.user.id,
-            ReinstatementRequest.checked == False,
+            ReinstatementRequest.checked == False,  # noqa: E712
         )
         if opened_request is not None:
             await interaction.response.send_message(
-                "### У вас уже есть открытое заявление на рассмотрении.\nОжидайте его рассмотрения.",
+                "### У вас уже есть открытое заявление на рассмотрении.\n"
+                "Ожидайте его рассмотрения.",
                 ephemeral=True,
             )
             return
@@ -52,7 +53,9 @@ class ReinstatementModal(discord.ui.Modal, title="Заявление на вос
         view = discord.ui.View()
         view.add_item(ApproveReinstatementButton(request_id=request.id))
         view.add_item(RejectReinstatementButton(request_id=request.id))
-        await interaction.channel.send(f"-# ||<@&{division.role_id}>||", embed=await request.to_embed(), view=view)
+        await interaction.channel.send(
+            f"-# ||<@&{division.role_id}>||", embed=await request.to_embed(), view=view
+        )
 
         from cogs.reinstatement import update_bottom_message
 

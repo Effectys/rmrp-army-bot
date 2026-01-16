@@ -8,9 +8,13 @@ def name_component():
 
 
 def static_label():
+    description = (
+        "Статик - ваш игровой идентификатор. "
+        "Посмотреть его можно в вашем паспорте, он будет формата XXX-XXX."
+    )
     return discord.ui.Label(
         text="Ваш «Статик»",
-        description="Статик - ваш игровой идентификатор. Посмотреть его можно в вашем паспорте, он будет формата XXX-XXX.",
+        description=description,
         component=discord.ui.TextInput(
             style=discord.TextStyle.short, placeholder="XXX-XXX", max_length=7
         ),

@@ -17,7 +17,9 @@ from .transfers import (
     OldApproveButton,
     RejectTransferButton,
     TransferApply,
-    TransferView,
+)
+from .transfers import (
+    TransferView as TransferView,
 )
 
 

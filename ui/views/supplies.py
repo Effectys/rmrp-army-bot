@@ -20,9 +20,10 @@ def check_limits(items: Dict[str, int]) -> Tuple[bool, str]:
     for item_name, qty in items.items():
         if item_name in config.SUPPLY_LIMITS:
             if qty > config.SUPPLY_LIMITS[item_name]:
+                limit = config.SUPPLY_LIMITS[item_name]
                 return (
                     False,
-                    f"Лимит на '{item_name}': максимум {config.SUPPLY_LIMITS[item_name]} шт.",
+                    f"Лимит на '{item_name}': максимум {limit} шт.",
                 )
 
         found_cat = False
@@ -52,10 +53,11 @@ def check_limits(items: Dict[str, int]) -> Tuple[bool, str]:
         )
 
     # Медикаменты (общий лимит на категорию, если есть)
-    if cat_counts["Медикаменты"] > config.SUPPLY_LIMITS.get("Медикаменты", 999):
+    med_limit = config.SUPPLY_LIMITS.get("Медикаменты", 999)
+    if cat_counts["Медикаменты"] > med_limit:
         return (
             False,
-            f"Лимит на Медикаменты (всего): максимум {config.SUPPLY_LIMITS['Медикаменты']} шт.",
+            f"Лимит на Медикаменты (всего): максимум {med_limit} шт.",
         )
 
     return True, ""
@@ -71,7 +73,8 @@ async def handle_approve(interaction: discord.Interaction, req: SupplyRequest):
             hours, remainder = divmod(int(remaining.total_seconds()), 3600)
             minutes, _ = divmod(remainder, 60)
             await interaction.response.send_message(
-                f"❌ У пользователя КД на получение склада. Осталось: {hours}ч {minutes}м.",
+                f"❌ У пользователя КД на получение склада. "
+                f"Осталось: {hours}ч {minutes}м.",
                 ephemeral=True,
             )
             return
@@ -318,7 +321,8 @@ class SupplyBuilderView(discord.ui.View):
                     hours, remainder = divmod(int(remaining.total_seconds()), 3600)
                     minutes, _ = divmod(remainder, 60)
                     await interaction.response.send_message(
-                        f"❌ У вас КД на получение склада. Осталось: {hours}ч {minutes}м.",
+                        f"❌ У вас КД на получение склада. "
+                        f"Осталось: {hours}ч {minutes}м.",
                         ephemeral=True,
                     )
                     return
@@ -449,7 +453,8 @@ class SupplyCreateView(discord.ui.View):
         )
         if existing:
             await interaction.response.send_message(
-                f"❌ У вас уже есть активная заявка #{existing.id}. Дождитесь её рассмотрения.",
+                f"❌ У вас уже есть активная заявка #{existing.id}. "
+                "Дождитесь её рассмотрения.",
                 ephemeral=True,
             )
             return
