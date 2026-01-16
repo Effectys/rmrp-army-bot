@@ -1,0 +1,4 @@
+discord.py~=2.6.4
+pymongo~=4.16.0
+python-dotenv~=1.2.1
+beanie~=1.30.0
