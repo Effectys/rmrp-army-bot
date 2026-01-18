@@ -255,6 +255,7 @@ class ApproveRoleButton(
             user.first_name, user.last_name = request.data.full_name.split(" ", 1)
             user.static = request.data.static_id
             user.invited_at = datetime.datetime.now()
+            user.pre_inited = True
             await user.save()
 
             # Роли: Военнослужащий, Рядовой, Военная академия

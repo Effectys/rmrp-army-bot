@@ -7,9 +7,9 @@ from database import divisions
 
 
 def _apply_role_changes(
-    initial_roles: list[discord.Role],
-    roles_to_remove: set[int],
-    target_role_ids: set[int],
+        initial_roles: list[discord.Role],
+        roles_to_remove: set[int],
+        target_role_ids: set[int],
 ) -> list[Role]:
     new_roles = [role for role in initial_roles if role.id not in roles_to_remove]
 
@@ -25,7 +25,7 @@ def _apply_role_changes(
 
 
 def to_division(
-    initial_roles: list[discord.Role], division_id: int | None
+        initial_roles: list[discord.Role], division_id: int | None
 ) -> list[Role]:
     target_role_id = None
     other_division_role_ids = set()
@@ -54,9 +54,9 @@ def to_rank(initial_roles: list[discord.Role], rank: int | None) -> list[Role]:
 
 
 def to_position(
-    initial_roles: list[discord.Role],
-    division_id: int | None,
-    position_name: str | None,
+        initial_roles: list[discord.Role],
+        division_id: int | None,
+        position_name: str | None,
 ) -> list[Role]:
     all_position_role_ids = set()
     target_role_id = None
@@ -70,3 +70,14 @@ def to_position(
 
     target_ids = {target_role_id} if target_role_id else set()
     return _apply_role_changes(initial_roles, all_position_role_ids, target_ids)
+
+
+def get_rank_from_roles(roles: list[discord.Role]) -> int | None:
+    role_ids = {role.id for role in roles}
+
+    for rank, role_id in config.RANK_ROLES.items():
+        if role_id in role_ids:
+            for rank_num, rank_name in enumerate(config.RANKS):
+                if rank_name == rank:
+                    return rank_num
+    return None

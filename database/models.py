@@ -57,6 +57,7 @@ class User(Document):
     invited_at: datetime.datetime | None = None
     blacklist: Blacklist | None = None
     last_supply_at: datetime.datetime | None = None
+    pre_inited: bool = False
 
     @property
     def full_name(self) -> str | None:
