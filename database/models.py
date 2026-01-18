@@ -33,6 +33,9 @@ class Division(Document):
     emoji: str | None = None
     positions: list[Position] | None = None
 
+    class Settings:
+        name = "divisions"
+
 
 class Blacklist(BaseModel):
     initiator: int
@@ -89,6 +92,9 @@ class User(Document):
                 parts.append(self.full_name)
         return " | ".join(parts)[:32]
 
+    class Settings:
+        name = "users"
+
 
 class ReinstatementData(BaseModel):
     full_name: str
@@ -139,6 +145,9 @@ class ReinstatementRequest(Document):
             )
 
         return e
+
+    class Settings:
+        name = "reinstatement_requests"
 
 
 class RoleType(str, Enum):
@@ -233,6 +242,9 @@ class RoleRequest(Document):
         e.set_footer(text="Отправлено")
         return e
 
+    class Settings:
+        name = "role_requests"
+
 
 class SupplyRequest(Document):
     id: int
@@ -285,6 +297,9 @@ class SupplyRequest(Document):
             )
 
         return embed
+
+    class Settings:
+        name = "supply_requests"
 
 
 class DismissalType(str, Enum):
@@ -358,6 +373,9 @@ class DismissalRequest(Document):
             )
 
         return embed
+
+    class Settings:
+        name = "dismissal_requests"
 
 
 class TransferRequest(Document):
@@ -459,7 +477,13 @@ class TransferRequest(Document):
             )
         return embed
 
+    class Settings:
+        name = "transfer_requests"
+
 
 class BottomMessage(Document):
     channel_id: Indexed(int, unique=True)
     message_id: int
+
+    class Settings:
+        name = "bottom_messages"
