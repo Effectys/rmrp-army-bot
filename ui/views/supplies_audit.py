@@ -1,14 +1,30 @@
 import discord
 
 import texts
+from database.models import User
 from ui.modals.supplies_audit import ClearSupplyModal, GiveSupplyModal
+from utils.user_data import needs_static_input
 
 
 async def give_button_callback(interaction: discord.Interaction):
+    user = await User.find_one(User.discord_id == interaction.user.id)
+    if needs_static_input(user):
+        from ui.modals.static_input import StaticInputModal
+
+        await interaction.response.send_modal(StaticInputModal())
+        return
+
     await interaction.response.send_modal(GiveSupplyModal())
 
 
 async def clear_button_callback(interaction: discord.Interaction):
+    user = await User.find_one(User.discord_id == interaction.user.id)
+    if needs_static_input(user):
+        from ui.modals.static_input import StaticInputModal
+
+        await interaction.response.send_modal(StaticInputModal())
+        return
+
     await interaction.response.send_modal(ClearSupplyModal())
 
 

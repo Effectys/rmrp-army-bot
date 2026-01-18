@@ -9,7 +9,7 @@ import config
 from database.models import Blacklist, DismissalRequest, DismissalType, User
 from ui.modals.dismissal import DismissalModal
 from utils.audit import AuditAction, audit_logger
-from utils.user_data import format_game_id
+from utils.user_data import format_game_id, needs_static_input
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +22,12 @@ async def open_modal(interaction: discord.Interaction, d_type: DismissalType):
         await interaction.response.send_message(
             "❌ Вас нет в базе данных.", ephemeral=True
         )
+        return
+
+    if needs_static_input(user_db):
+        from ui.modals.static_input import StaticInputModal
+
+        await interaction.response.send_modal(StaticInputModal())
         return
 
     full_name = user_db.full_name or ""

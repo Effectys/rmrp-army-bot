@@ -1,4 +1,11 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import discord
+
+if TYPE_CHECKING:
+    from database.models import User
 
 statics_cache = {}
 names_cache = {}
@@ -95,3 +102,10 @@ async def update_user_name_if_changed(
 
         return True
     return False
+
+
+def needs_static_input(user: User | None) -> bool:
+    """Проверяет, требуется ли пользователю ввести static."""
+    if user is None:
+        return False
+    return user.pre_inited and user.rank is not None and user.static is None

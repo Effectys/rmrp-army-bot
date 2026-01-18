@@ -13,6 +13,7 @@ from database.models import Division, TransferRequest, User
 from ui.views.indicators import indicator_view
 from utils.audit import AuditAction, audit_logger
 from utils.roles import to_division, to_position
+from utils.user_data import needs_static_input
 
 
 class TransferView(discord.ui.LayoutView):
@@ -101,6 +102,12 @@ class TransferApply(
                 f"{self.division.abbreviation}. Подача заявления невозможна.",
                 ephemeral=True,
             )
+            return
+
+        if needs_static_input(user):
+            from ui.modals.static_input import StaticInputModal
+
+            await interaction.response.send_modal(StaticInputModal())
             return
 
         user_name = None
