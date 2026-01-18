@@ -40,7 +40,7 @@ RANK_ROLES = {
     "Генерал-майор": 1246113709093556337,
     "Генерал-лейтенант": 1262442013241118820,
     "Генерал-полковник": 1262442305290371153,
-    "Генерал армии": 1246113708514476073
+    "Генерал армии": 1246113708514476073,
 }
 if not IS_PRODUCTION:
     RANK_ROLES["Рядовой"] = 1460318445538246706
@@ -94,25 +94,29 @@ RANK_EMOJIS = [
 RANKS = list(RANK_ROLES.keys())
 AVAILABLE_FOR_REINSTATEMENT = RANKS[4:12]  # "Старший сержант" -> "Капитан"
 
-CHANNELS = {
-    "audit": 1460316387216986378,
-    "reinstatement": 1460316020068581597,
-    "role_getting": 1460316054101168366,
-    "blacklist": 1460316417827278902,
-    "storage_requests": 1460316441634017456,
-    "storage_audit": 1460316457291354112,
-    "dismissal": 1460316577449906196,
-    "static_log": 1460316549331288342,
-} if IS_PRODUCTION else {
-    "audit": 1246119365607424050,
-    "reinstatement": 1317830537724952626,
-    "role_getting": 1246118891864723576,
-    "blacklist": 1246119574357807246,
-    "storage_requests": 1386780423098732567,
-    "storage_audit": 1246119396225843261,
-    "dismissal": 1246119825487564981,
-    "static_log": 1246123219006787636,
-}
+CHANNELS = (
+    {
+        "audit": 1460316387216986378,
+        "reinstatement": 1460316020068581597,
+        "role_getting": 1460316054101168366,
+        "blacklist": 1460316417827278902,
+        "storage_requests": 1460316441634017456,
+        "storage_audit": 1460316457291354112,
+        "dismissal": 1460316577449906196,
+        "static_log": 1460316549331288342,
+    }
+    if IS_PRODUCTION
+    else {
+        "audit": 1246119365607424050,
+        "reinstatement": 1317830537724952626,
+        "role_getting": 1246118891864723576,
+        "blacklist": 1246119574357807246,
+        "storage_requests": 1386780423098732567,
+        "storage_audit": 1246119396225843261,
+        "dismissal": 1246119825487564981,
+        "static_log": 1246123219006787636,
+    }
+)
 
 SUPPLY_ITEMS = {
     "Оружие": [
@@ -150,6 +154,7 @@ SUPPLY_LIMITS = {
 BLACKLIST_MENTIONS = (1245655012760092707, 1245655012760092705, 1246113710255374336)
 
 if IS_PRODUCTION:
+
     class RoleId(Enum):
         REINFORCEMENT = 1318305723637301268
         ATTESTATION = 1246115278992048262
@@ -159,6 +164,7 @@ if IS_PRODUCTION:
         SUPPLY_ACCESS = 1246115197781934161  # Доступ к поставке
         GOV_EMPLOYEE = 1251432181381861477  # Гос. сотрудник
 else:
+
     class RoleId(Enum):
         REINFORCEMENT = 1460321975091335291
         ATTESTATION = 1461081251061432350
@@ -167,6 +173,7 @@ else:
         MILITARY_ACADEMY = 1460321456456990959  # Военная академия
         SUPPLY_ACCESS = 1460318487279960164  # Доступ к поставке
         GOV_EMPLOYEE = 1461101073392472178  # Гос. сотрудник
+
 
 PENALTY_THRESHOLD = 5
 

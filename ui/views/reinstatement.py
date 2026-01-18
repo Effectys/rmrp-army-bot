@@ -13,7 +13,11 @@ from database.models import ReinstatementRequest, User
 from ui.views.indicators import indicator_view
 from utils.audit import AuditAction, audit_logger
 from utils.roles import to_division, to_position, to_rank
-from utils.user_data import get_full_name, needs_static_input, update_user_name_if_changed
+from utils.user_data import (
+    get_full_name,
+    needs_static_input,
+    update_user_name_if_changed,
+)
 
 logger = logging.getLogger(__name__)
 

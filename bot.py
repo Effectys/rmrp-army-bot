@@ -41,10 +41,10 @@ class Bot(commands.Bot):
                         "division": div.division_id if div else None,
                         "position": pos.name if pos else None,
                         "rank": rank,
-                        "pre_inited": True
+                        "pre_inited": True,
                     },
                 },
-                upsert=True
+                upsert=True,
             )
             operations.append(op)
 

@@ -82,8 +82,7 @@ class Blacklist(commands.Cog):
             timestamp=datetime.datetime.now(),
         )
         author_name = (
-            f"Составитель: {initiator.full_name} | "
-            f"{format_game_id(initiator.static)}"
+            f"Составитель: {initiator.full_name} | {format_game_id(initiator.static)}"
         )
         embed.set_author(name=author_name)
         embed.add_field(
@@ -95,7 +94,7 @@ class Blacklist(commands.Cog):
         embed.add_field(name="Доказательства", value=evidence, inline=False)
 
         if days > 0:
-            ends_at_fmt = discord.utils.format_dt(blacklist.ends_at, style='d')
+            ends_at_fmt = discord.utils.format_dt(blacklist.ends_at, style="d")
             embed.add_field(
                 name="Срок",
                 value=f"{days} дней (до {ends_at_fmt})",
@@ -104,7 +103,7 @@ class Blacklist(commands.Cog):
         else:
             embed.add_field(name="Срок", value="Бессрочно", inline=False)
 
-        mentions = ' '.join(f'<@&{m}>' for m in config.BLACKLIST_MENTIONS)
+        mentions = " ".join(f"<@&{m}>" for m in config.BLACKLIST_MENTIONS)
         await self.bot.get_channel(channel_id).send(
             f"-# ||{user.mention} {interaction.user.mention} {mentions}||",
             embed=embed,
@@ -162,8 +161,7 @@ class Blacklist(commands.Cog):
             timestamp=datetime.datetime.now(),
         )
         author_name = (
-            f"Составитель: {initiator.full_name} | "
-            f"{format_game_id(initiator.static)}"
+            f"Составитель: {initiator.full_name} | {format_game_id(initiator.static)}"
         )
         embed.set_author(name=author_name)
         embed.add_field(

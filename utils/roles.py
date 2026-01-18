@@ -7,9 +7,9 @@ from database import divisions
 
 
 def _apply_role_changes(
-        initial_roles: list[discord.Role],
-        roles_to_remove: set[int],
-        target_role_ids: set[int],
+    initial_roles: list[discord.Role],
+    roles_to_remove: set[int],
+    target_role_ids: set[int],
 ) -> list[Role]:
     new_roles = [role for role in initial_roles if role.id not in roles_to_remove]
 
@@ -25,7 +25,7 @@ def _apply_role_changes(
 
 
 def to_division(
-        initial_roles: list[discord.Role], division_id: int | None
+    initial_roles: list[discord.Role], division_id: int | None
 ) -> list[Role]:
     target_role_id = None
     other_division_role_ids = set()
@@ -54,9 +54,9 @@ def to_rank(initial_roles: list[discord.Role], rank: int | None) -> list[Role]:
 
 
 def to_position(
-        initial_roles: list[discord.Role],
-        division_id: int | None,
-        position_name: str | None,
+    initial_roles: list[discord.Role],
+    division_id: int | None,
+    position_name: str | None,
 ) -> list[Role]:
     all_position_role_ids = set()
     target_role_id = None

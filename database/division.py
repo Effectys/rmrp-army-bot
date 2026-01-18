@@ -33,7 +33,9 @@ class Divisions:
         div = self._by_id.get(division_id)
         return div.name if div else None
 
-    def get_user_data(self, user: discord.Member) -> Tuple[Division | None, Position | None]:
+    def get_user_data(
+        self, user: discord.Member
+    ) -> Tuple[Division | None, Position | None]:
         """Получить подразделение и должность пользователя из его ролей"""
         user_role_ids = {role.id for role in user.roles}
 
