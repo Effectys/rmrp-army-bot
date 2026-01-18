@@ -18,7 +18,11 @@ if not MONGO_URI:
     logger.warning("MONGO_URI not found, using default value")
 MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "TimohaBot")
 
-IS_PRODUCTION = os.getenv("ENVIRONMENT").lower() == "production"
+ENVIRONMENT = os.getenv("ENVIRONMENT")
+if not ENVIRONMENT:
+    raise Exception("ENVIRONMENT not set")
+
+IS_PRODUCTION = ENVIRONMENT.lower() == "production"
 GUILD_ID = 1245655012550512670 if IS_PRODUCTION else 1460315965639229615
 
 RANK_ROLES = {
