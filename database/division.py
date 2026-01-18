@@ -40,6 +40,8 @@ class Divisions:
         user_role_ids = {role.id for role in user.roles}
 
         for div in self.divisions:
+            if not div.positions:
+                continue
             for pos in div.positions:
                 if pos.role_id in user_role_ids:
                     return div, pos
