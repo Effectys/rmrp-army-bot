@@ -100,17 +100,6 @@ AVAILABLE_FOR_REINSTATEMENT = RANKS[4:12]  # "Старший сержант" -> 
 
 CHANNELS = (
     {
-        "audit": 1460316387216986378,
-        "reinstatement": 1460316020068581597,
-        "role_getting": 1460316054101168366,
-        "blacklist": 1460316417827278902,
-        "storage_requests": 1460316441634017456,
-        "storage_audit": 1460316457291354112,
-        "dismissal": 1460316577449906196,
-        "static_log": 1460316549331288342,
-    }
-    if IS_PRODUCTION
-    else {
         "audit": 1246119365607424050,
         "reinstatement": 1317830537724952626,
         "role_getting": 1246118891864723576,
@@ -119,6 +108,17 @@ CHANNELS = (
         "storage_audit": 1246119396225843261,
         "dismissal": 1246119825487564981,
         "static_log": 1246123219006787636,
+    }
+    if IS_PRODUCTION
+    else {
+        "audit": 1460316387216986378,
+        "reinstatement": 1460316020068581597,
+        "role_getting": 1460316054101168366,
+        "blacklist": 1460316417827278902,
+        "storage_requests": 1460316441634017456,
+        "storage_audit": 1460316457291354112,
+        "dismissal": 1460316577449906196,
+        "static_log": 1460316549331288342,
     }
 )
 
@@ -174,7 +174,7 @@ else:
         REINFORCEMENT = 1460321975091335291
         ATTESTATION = 1461081251061432350
         CONTRACT = 1460319346646581477
-        MILITARY = 1460318445538246706  # Военнослужащий ВС РФ
+        MILITARY = 1462831391438934128  # Военнослужащий ВС РФ
         MILITARY_ACADEMY = 1460321456456990959  # Военная академия
         SUPPLY_ACCESS = 1460318487279960164  # Доступ к поставке
         GOV_EMPLOYEE = 1461101073392472178  # Гос. сотрудник
