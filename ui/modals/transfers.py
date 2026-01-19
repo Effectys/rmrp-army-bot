@@ -14,7 +14,7 @@ from ui.views.transfers import (
 
 class TransferModal(discord.ui.Modal):
     nickname = discord.ui.TextInput(
-        label="[IC] Ваше имя и фамилия", placeholder="Артём Царёв", max_length=25
+        label="[IC] Ваше имя и фамилия", placeholder="Иван Иванов", max_length=25
     )
 
     def __init__(self, destination: Division, default_nickname: str | None):

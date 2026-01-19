@@ -3,7 +3,7 @@ import discord.ui
 
 def name_component():
     return discord.ui.TextInput(
-        label="Ваше имя и фамилия", placeholder="Артём Царёв", max_length=25
+        label="Ваше имя и фамилия", placeholder="Иван Иванов", max_length=25
     )
 
 

@@ -78,7 +78,7 @@ class RoleRequestModal(discord.ui.Modal, title="Заявление на полу
 
 class SupplyAccessModal(discord.ui.Modal, title="Заявление на доступ к поставке"):
     name = discord.ui.TextInput(
-        label="Ваше имя и фамилия", placeholder="Артём Царёв", max_length=25
+        label="Ваше имя и фамилия", placeholder="Иван Иванов", max_length=25
     )
     static_id = discord.ui.TextInput(
         label="Ваш статик", placeholder="XXX-XXX", max_length=7
@@ -166,7 +166,7 @@ class SupplyAccessModal(discord.ui.Modal, title="Заявление на дос�
 
 class GovEmployeeModal(discord.ui.Modal, title="Заявление на роль Гос. сотрудник"):
     name = discord.ui.TextInput(
-        label="Ваше имя и фамилия", placeholder="Артём Царёв", max_length=25
+        label="Ваше имя и фамилия", placeholder="Иван Иванов", max_length=25
     )
     static_id = discord.ui.TextInput(
         label="Ваш статик", placeholder="XXX-XXX", max_length=7
