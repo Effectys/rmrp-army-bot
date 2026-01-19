@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import discord
 
+from utils.exceptions import StaticInputRequired
 if TYPE_CHECKING:
     from database.models import User
 
@@ -123,6 +124,6 @@ async def get_initiator(interaction: discord.Interaction) -> User | None:
         from ui.modals.static_input import StaticInputModal
 
         await interaction.response.send_modal(StaticInputModal())
-        raise discord.InteractionResponded(interaction)
+        raise StaticInputRequired()
 
     return initiator

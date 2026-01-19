@@ -12,9 +12,22 @@ from database.models import User
 from ui.views import load_buttons
 from utils.audit import audit_logger
 from utils.roles import get_rank_from_roles
+from utils.exceptions import StaticInputRequired
 
 logger = logging.getLogger(__name__)
 
+
+_original_view_on_error = discord.ui.View.on_error
+
+async def _custom_view_on_error(
+    self, interaction: discord.Interaction, error: Exception, item: discord.ui.Item
+):
+    """Глобальный обработчик ошибок View - игнорирует StaticInputRequired."""
+    if isinstance(error, StaticInputRequired):
+        return
+    await _original_view_on_error(self, interaction, error, item)
+
+discord.ui.View.on_error = _custom_view_on_error
 
 class Bot(commands.Bot):
     def __init__(self, *args, **kwargs):
