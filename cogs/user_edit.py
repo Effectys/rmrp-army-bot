@@ -11,7 +11,7 @@ from database import divisions
 from database.models import User
 from utils.audit import AuditAction, audit_logger
 from utils.roles import to_division, to_position, to_rank
-from utils.user_data import format_game_id
+from utils.user_data import format_game_id, get_initiator
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class UserEdit(commands.Cog):
     async def _check_permissions(
         self, interaction: discord.Interaction, target_user_db: User
     ) -> bool:
-        editor_db = await User.find_one(User.discord_id == interaction.user.id)
+        editor_db = await get_initiator(interaction)
 
         if not editor_db:
             await interaction.response.send_message(
@@ -184,7 +184,7 @@ class UserEdit(commands.Cog):
             )
             return
 
-        editor = await User.find_one(User.discord_id == interaction.user.id)
+        editor = await get_initiator(interaction)
         if (editor.rank or 0) <= user_info.rank:
             await interaction.response.send_message(
                 "❌ Вы не можете присвоить звание выше или равное вашему.",
@@ -319,7 +319,7 @@ class UserEdit(commands.Cog):
             if not await self._check_permissions(interaction, user_info):
                 return
 
-            editor = await User.find_one(User.discord_id == interaction.user.id)
+            editor = await get_initiator(interaction)
             new_rank = int(select_rank.values[0])
 
             if (editor.rank or 0) <= new_rank:
@@ -472,7 +472,7 @@ class UserEdit(commands.Cog):
                 if not await self._check_permissions(interaction, user_info):
                     return
 
-                editor = await User.find_one(User.discord_id == interaction.user.id)
+                editor = await get_initiator(interaction)
                 new_position_name = position_select.values[0]
 
                 if editor.division and editor.position:

@@ -16,26 +16,20 @@ from utils.roles import to_division, to_position, to_rank
 from utils.user_data import (
     get_full_name,
     needs_static_input,
-    update_user_name_if_changed,
+    update_user_name_if_changed, get_initiator,
 )
 
 logger = logging.getLogger(__name__)
 
 
 async def button_callback(interaction: discord.Interaction):
-    user = await User.find_one(User.discord_id == interaction.user.id)
+    user = await get_initiator(interaction)
     if not user or user.rank is None:
         await interaction.response.send_message(
             "### Вы не состоите на службе "
             "и не можете подать заявление на восстановление.",
             ephemeral=True,
         )
-        return
-
-    if needs_static_input(user):
-        from ui.modals.static_input import StaticInputModal
-
-        await interaction.response.send_modal(StaticInputModal())
         return
 
     from ui.modals.reinstatement import ReinstatementModal
@@ -70,7 +64,7 @@ class ReinstatementApplyView(discord.ui.LayoutView):
 
 
 async def interaction_check(interaction: Interaction[ClientT], /) -> bool:
-    user = await User.find_one(User.discord_id == interaction.user.id)
+    user = await get_initiator(interaction)
     if (user.rank or 0) >= 14:
         return True
     if divisions.get_division(user.division).abbreviation == "ВП":

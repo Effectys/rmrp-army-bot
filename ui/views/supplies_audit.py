@@ -4,40 +4,28 @@ import config
 import texts
 from database.models import User
 from ui.modals.supplies_audit import ClearSupplyModal, GiveSupplyModal
-from utils.user_data import needs_static_input
+from utils.user_data import needs_static_input, get_initiator
 
 
 async def give_button_callback(interaction: discord.Interaction):
-    user = await User.find_one(User.discord_id == interaction.user.id)
+    user = await get_initiator(interaction)
 
     if not user or (user.rank or 0) < config.RankIndex.MAJOR:
         await interaction.response.send_message(
             "❌ Доступно со звания Майор.", ephemeral=True
         )
-        return
-
-    if needs_static_input(user):
-        from ui.modals.static_input import StaticInputModal
-
-        await interaction.response.send_modal(StaticInputModal())
         return
 
     await interaction.response.send_modal(GiveSupplyModal())
 
 
 async def clear_button_callback(interaction: discord.Interaction):
-    user = await User.find_one(User.discord_id == interaction.user.id)
+    user = await get_initiator(interaction)
 
     if not user or (user.rank or 0) < config.RankIndex.MAJOR:
         await interaction.response.send_message(
             "❌ Доступно со звания Майор.", ephemeral=True
         )
-        return
-
-    if needs_static_input(user):
-        from ui.modals.static_input import StaticInputModal
-
-        await interaction.response.send_modal(StaticInputModal())
         return
 
     await interaction.response.send_modal(ClearSupplyModal())

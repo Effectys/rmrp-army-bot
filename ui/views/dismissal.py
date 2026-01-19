@@ -8,7 +8,7 @@ import config
 from database.models import Blacklist, DismissalRequest, DismissalType, User
 from ui.modals.dismissal import DismissalModal
 from utils.audit import AuditAction, audit_logger
-from utils.user_data import format_game_id, needs_static_input
+from utils.user_data import format_game_id, needs_static_input, get_initiator
 
 logger = logging.getLogger(__name__)
 
@@ -16,24 +16,18 @@ closed_requests = set()
 
 
 async def open_modal(interaction: discord.Interaction, d_type: DismissalType):
-    user_db = await User.find_one(User.discord_id == interaction.user.id)
+    user_db = await get_initiator(interaction)
     if not user_db:
         await interaction.response.send_message(
             "❌ Вас нет в базе данных.", ephemeral=True
         )
         return
 
-    if needs_static_input(user_db):
-        from ui.modals.static_input import StaticInputModal
-
-        await interaction.response.send_modal(StaticInputModal())
-        return
-
     full_name = user_db.full_name or ""
     await interaction.response.send_modal(DismissalModal(d_type, full_name))
 
 async def psj_button_callback(interaction: discord.Interaction):
-    user = await User.find_one(User.discord_id == interaction.user.id)
+    user = await get_initiator(interaction)
     if not user or user.rank is None:
         await interaction.response.send_message(
             "❌ Вы не состоите на службе и не можете подать рапорт на ПСЖ.",
@@ -112,7 +106,7 @@ class DismissalManagementButton(
         return cls(match.group("action"), int(match.group("id")))
 
     async def callback(self, interaction: discord.Interaction):
-        officer = await User.find_one(User.discord_id == interaction.user.id)
+        officer = await get_initiator(interaction)
         if not officer or (officer.rank or 0) < config.CAPTAIN_RANK_INDEX:
             await interaction.response.send_message(
                 "❌ Доступно со звания Капитан.", ephemeral=True

@@ -1,6 +1,7 @@
 import discord.ui
 
 import config
+from config import nickname_regex
 from database.counters import get_next_id
 from database.models import (
     ExtendedRoleData,
@@ -47,6 +48,14 @@ class RoleRequestModal(discord.ui.Modal, title="Заявление на полу
             await interaction.response.send_message(
                 "### Вы ввели некорректный статик. "
                 "Правильный формат: ХХХ-ХХХ. Пример: 537-328.",
+                ephemeral=True,
+            )
+            return
+
+        if not nickname_regex.match(self.name.value):
+            await interaction.response.send_message(
+                "### Вы ввели некорректное имя и фамилию. "
+                "Правильный формат: Иван Иванов.",
                 ephemeral=True,
             )
             return

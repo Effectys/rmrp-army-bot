@@ -31,6 +31,9 @@ async def get_full_name(interaction: discord.Interaction) -> str | None:
 
 
 def format_game_id(game_id: int) -> str:
+    if game_id is None:
+        return "N/A"
+
     game_id_str = str(game_id).zfill(6)
     return f"{game_id_str[:3]}-{game_id_str[3:]}"
 
@@ -109,3 +112,17 @@ def needs_static_input(user: User | None) -> bool:
     if user is None:
         return False
     return user.pre_inited and user.rank is not None and user.static is None
+
+
+async def get_initiator(interaction: discord.Interaction) -> User | None:
+    from database.models import User
+
+    initiator = await User.find_one(User.discord_id == interaction.user.id)
+
+    if needs_static_input(initiator):
+        from ui.modals.static_input import StaticInputModal
+
+        await interaction.response.send_modal(StaticInputModal())
+        raise discord.InteractionResponded(interaction)
+
+    return initiator

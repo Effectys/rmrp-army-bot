@@ -4,6 +4,7 @@ from database import divisions
 from database.counters import get_next_id
 from database.models import ReinstatementData, ReinstatementRequest
 from ui.modals.labels import name_component, screenshot_label, static_reminder
+from config import nickname_regex
 from ui.views.reinstatement import (
     ApproveReinstatementButton,
     RejectReinstatementButton,
@@ -36,6 +37,14 @@ class ReinstatementModal(discord.ui.Modal, title="Заявление на вос
         await interaction.response.send_message(
             "### Заявление отправлено на рассмотрение.", ephemeral=True
         )
+
+        if not nickname_regex.match(self.name.value):
+            await interaction.response.send_message(
+                "### Вы ввели некорректное имя и фамилию. "
+                "Правильный формат: Иван Иванов.",
+                ephemeral=True,
+            )
+            return
 
         request = ReinstatementRequest(
             id=await get_next_id("reinstatement_requests"),

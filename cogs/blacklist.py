@@ -8,7 +8,7 @@ import config
 from bot import Bot
 from database.models import Blacklist as BlacklistModel
 from database.models import User
-from utils.user_data import format_game_id
+from utils.user_data import format_game_id, get_initiator
 
 channel_id = config.CHANNELS["blacklist"]
 
@@ -46,7 +46,7 @@ class Blacklist(commands.Cog):
         evidence: str,
     ):
         db_user = await User.find_one(User.discord_id == user.id)
-        initiator = await User.find_one(User.discord_id == interaction.user.id)
+        initiator = await get_initiator(interaction)
         if not db_user:
             await interaction.response.send_message(
                 f"Пользователь {user.mention} не найден в базе данных.", ephemeral=True
@@ -123,7 +123,7 @@ class Blacklist(commands.Cog):
         reason: str,
     ):
         db_user = await User.find_one(User.discord_id == user.id)
-        initiator = await User.find_one(User.discord_id == interaction.user.id)
+        initiator = await get_initiator(interaction)
 
         if not db_user:
             await interaction.response.send_message(

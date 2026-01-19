@@ -12,14 +12,14 @@ from database import divisions
 from database.models import RoleRequest, RoleType, User
 from ui.views.indicators import indicator_view
 from utils.audit import AuditAction, audit_logger
-from utils.user_data import format_game_id, update_user_name_if_changed
+from utils.user_data import format_game_id, update_user_name_if_changed, get_initiator
 
 closed_requests = set()
 
 
 async def _get_user_defaults(interaction: discord.Interaction):
     """Получить данные пользователя для заполнения формы."""
-    user = await User.find_one(User.discord_id == interaction.user.id)
+    user = await get_initiator(interaction)
     user_name, static_id = None, None
     if user:
         if user.full_name:
@@ -43,7 +43,7 @@ async def _check_can_apply(interaction: discord.Interaction) -> bool:
         )
         return False
 
-    user = await User.find_one(User.discord_id == interaction.user.id)
+    user = await get_initiator(interaction)
     if user and user.blacklist:
         await interaction.response.send_message(
             "### Вы не можете подать заявление на роль, "
@@ -156,7 +156,7 @@ async def check_approve_permission(
     interaction: Interaction[ClientT], request: RoleRequest
 ) -> bool:
     """Проверить права на одобрение заявки в зависимости от типа."""
-    user = await User.find_one(User.discord_id == interaction.user.id)
+    user = await get_initiator(interaction)
     if not user:
         return False
 

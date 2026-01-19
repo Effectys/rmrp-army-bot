@@ -13,7 +13,7 @@ from database.models import Division, TransferRequest, User
 from ui.views.indicators import indicator_view
 from utils.audit import AuditAction, audit_logger
 from utils.roles import to_division, to_position
-from utils.user_data import needs_static_input
+from utils.user_data import needs_static_input, get_initiator
 
 
 class TransferView(discord.ui.LayoutView):
@@ -95,19 +95,13 @@ class TransferApply(
             )
             return
 
-        user = await User.find_one(User.discord_id == interaction.user.id)
+        user = await get_initiator(interaction)
         if user and user.division == self.division.division_id:
             await interaction.response.send_message(
                 f"### Вы уже состоите в подразделении "
                 f"{self.division.abbreviation}. Подача заявления невозможна.",
                 ephemeral=True,
             )
-            return
-
-        if needs_static_input(user):
-            from ui.modals.static_input import StaticInputModal
-
-            await interaction.response.send_modal(StaticInputModal())
             return
 
         user_name = None
@@ -155,7 +149,7 @@ class OldApproveButton(
             await interaction.response.send_message("Запрос не найден.", ephemeral=True)
             return
 
-        officer = await User.find_one(User.discord_id == interaction.user.id)
+        officer = await get_initiator(interaction)
 
         if not can_user_handle_transfer(officer, [request.old_division_id]):
             await interaction.response.send_message(
@@ -229,7 +223,7 @@ class ApproveTransferButton(
             await interaction.response.send_message("Запрос не найден.", ephemeral=True)
             return
 
-        officer = await User.find_one(User.discord_id == interaction.user.id)
+        officer = await get_initiator(interaction)
         if not can_user_handle_transfer(officer, [request.new_division_id]):
             await interaction.response.send_message(
                 "У вас нет прав взаимодействовать с этой кнопкой.", ephemeral=True
@@ -303,7 +297,7 @@ class RejectTransferButton(
             await interaction.response.send_message("Запрос не найден.", ephemeral=True)
             return
 
-        officer = await User.find_one(User.discord_id == interaction.user.id)
+        officer = await get_initiator(interaction)
 
         if not can_user_handle_transfer(
             officer, [request.old_division_id, request.new_division_id]

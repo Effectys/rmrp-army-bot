@@ -10,6 +10,7 @@ import config
 from database.counters import get_next_id
 from database.models import SupplyRequest, User
 from ui.modals.supplies import ItemAmountModal
+from utils.user_data import get_initiator
 
 logger = logging.getLogger(__name__)
 
@@ -312,7 +313,7 @@ class SupplyBuilderView(discord.ui.View):
                 content="✅ Изменения сохранены.", embed=None, view=None
             )
         else:
-            target_user = await User.find_one(User.discord_id == interaction.user.id)
+            target_user = await get_initiator(interaction)
 
             if target_user.last_supply_at:
                 cooldown_time = target_user.last_supply_at + datetime.timedelta(hours=3)
@@ -401,7 +402,7 @@ class SupplyManageButton(
             )
             return
 
-        user = await User.find_one(User.discord_id == interaction.user.id)
+        user = await get_initiator(interaction)
         # Проверка прав: Майор и выше. Индекс Майора = 12
         if (user.rank or 0) < 12:
             await interaction.response.send_message(
@@ -439,7 +440,7 @@ class SupplyCreateView(discord.ui.View):
     async def create_request(
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):
-        user = await User.find_one(User.discord_id == interaction.user.id)
+        user = await get_initiator(interaction)
 
         if not user or (user.rank or 0) < 4:
             await interaction.response.send_message(
