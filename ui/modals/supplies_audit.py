@@ -2,6 +2,8 @@ import discord.ui
 from discord import Interaction
 from discord._types import ClientT
 
+import config
+
 
 class GiveSupplyModal(discord.ui.Modal, title="Выдача снабжения"):
     to_whom = discord.ui.Label(
@@ -84,7 +86,9 @@ class ClearSupplyModal(discord.ui.Modal, title="Выдача снабжения"
             value="\n".join(f"- {item}" for item in job_list),
             inline=False,
         )
-        await interaction.channel.send(embed=embed)
+
+        mentions = "-# " + " ".join(f"<@&{m}>" for m in config.SUPPLIES_AUDIT_MENTIONS)
+        await interaction.channel.send(content=mentions, embed=embed)
 
         from cogs.supplies_audit import update_bottom_message
 
