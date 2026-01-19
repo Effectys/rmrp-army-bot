@@ -1,4 +1,3 @@
-# File: .\ui\views\dismissal.py
 import datetime
 import logging
 import re
@@ -33,6 +32,15 @@ async def open_modal(interaction: discord.Interaction, d_type: DismissalType):
     full_name = user_db.full_name or ""
     await interaction.response.send_modal(DismissalModal(d_type, full_name))
 
+async def psj_button_callback(interaction: discord.Interaction):
+    user = await User.find_one(User.discord_id == interaction.user.id)
+    if not user or user.rank is None:
+        await interaction.response.send_message(
+            "❌ Вы не состоите на службе и не можете подать рапорт на ПСЖ.",
+            ephemeral=True,
+        )
+        return
+    await open_modal(interaction, DismissalType.PJS)
 
 class DismissalApplyView(discord.ui.LayoutView):
     def __init__(self):
@@ -55,16 +63,6 @@ class DismissalApplyView(discord.ui.LayoutView):
     psj_button = discord.ui.Button(
         label="ПСЖ", style=discord.ButtonStyle.secondary, custom_id="dismissal_pjs"
     )
-
-    async def psj_button_callback(interaction: discord.Interaction):
-        user = await User.find_one(User.discord_id == interaction.user.id)
-        if not user or user.rank is None:
-            await interaction.response.send_message(
-                "❌ Вы не состоите на службе и не можете подать рапорт на ПСЖ.",
-                ephemeral=True,
-            )
-            return
-        await open_modal(interaction, DismissalType.PJS)
 
     psj_button.callback = psj_button_callback
 
@@ -122,20 +120,14 @@ class DismissalManagementButton(
             return
 
         req = await DismissalRequest.find_one(DismissalRequest.id == self.request_id)
-        if not req or req.status != "PENDING":
+        if not req or req.status != "PENDING" or self.request_id in closed_requests:
             await interaction.response.send_message(
                 "❌ Заявка не найдена или уже обработана.", ephemeral=True
             )
             return
+        closed_requests.add(self.request_id)
 
         if self.action == "reject":
-            if self.request_id in closed_requests:
-                await interaction.response.send_message(
-                    "Этот запрос уже был обработан.", ephemeral=True
-                )
-                return
-            closed_requests.add(self.request_id)
-
             req.status = "REJECTED"
             req.reviewer_id = interaction.user.id
             req.reviewed_at = datetime.datetime.now()
@@ -152,25 +144,20 @@ class DismissalManagementButton(
         if self.action == "approve":
             target_user_db = await User.find_one(User.discord_id == req.user_id)
             if not target_user_db:
+                closed_requests.discard(self.request_id)
                 await interaction.response.send_message(
                     "❌ Пользователь не найден в БД.", ephemeral=True
                 )
                 return
 
             if (officer.rank or 0) <= (target_user_db.rank or 0):
+                closed_requests.discard(self.request_id)
                 await interaction.response.send_message(
                     "❌ Вы не можете уволить этого пользователя, так как его "
                     "звание выше или равно вашему.",
                     ephemeral=True,
                 )
                 return
-
-            if self.request_id in closed_requests:
-                await interaction.response.send_message(
-                    "Этот запрос уже был обработан.", ephemeral=True
-                )
-                return
-            closed_requests.add(self.request_id)
 
             penalty_applied = False
 
