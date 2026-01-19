@@ -178,7 +178,6 @@ class DismissalManagementButton(
                 )
                 target_user_db.blacklist = blacklist
                 penalty_applied = True
-                print(blacklist)
 
             await audit_logger.log_action(
                 AuditAction.DISMISSED, interaction.user, req.user_id
