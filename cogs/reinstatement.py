@@ -17,6 +17,7 @@ class Reinstatement(commands.Cog):
         self.bot = bot
 
     @commands.command(name="upd")
+    @commands.has_permissions(administrator=True)
     async def update_command(self, ctx: commands.Context):
         if ctx.channel.id != channel_id:
             return

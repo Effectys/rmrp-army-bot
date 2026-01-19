@@ -37,7 +37,6 @@ class Blacklist(commands.Cog):
         reason="Причина добавления в черный список",
         evidence="Доказательства (ссылки на скриншоты, сообщения и т.д.)",
     )
-    @app_commands.checks.has_permissions(administrator=True)
     async def blacklist(
         self,
         interaction: discord.Interaction,
@@ -117,7 +116,6 @@ class Blacklist(commands.Cog):
         user="Военнослужащий для снятия с черного списка",
         reason="Причина снятия с черного списка",
     )
-    @app_commands.checks.has_permissions(administrator=True)
     async def unblacklist(
         self,
         interaction: discord.Interaction,

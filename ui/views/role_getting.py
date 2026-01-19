@@ -211,8 +211,16 @@ class ApproveRoleButton(
             await interaction.response.send_message("Запрос не найден.", ephemeral=True)
             return
 
+        if request.checked or self.request_id in closed_requests:
+            await interaction.response.send_message(
+                "Этот запрос уже был обработан.", ephemeral=True
+            )
+            return
+        closed_requests.add(self.request_id)
+
         # Проверка прав
         if not await check_approve_permission(interaction, request):
+            closed_requests.discard(self.request_id)
             role_names = {
                 RoleType.ARMY: "Младший лейтенант",
                 RoleType.SUPPLY_ACCESS: "Подполковник",
@@ -225,13 +233,6 @@ class ApproveRoleButton(
                 ephemeral=True,
             )
             return
-
-        if self.request_id in closed_requests:
-            await interaction.response.send_message(
-                "Этот запрос уже был обработан.", ephemeral=True
-            )
-            return
-        closed_requests.add(self.request_id)
 
         request.approved = True
         request.checked = True
@@ -363,8 +364,17 @@ class RejectRoleButton(
             await interaction.response.send_message("Запрос не найден.", ephemeral=True)
             return
 
+        # Двойная проверка: БД (персистентная) + in-memory (быстрая)
+        if request.checked or self.request_id in closed_requests:
+            await interaction.response.send_message(
+                "Этот запрос уже был обработан.", ephemeral=True
+            )
+            return
+        closed_requests.add(self.request_id)
+
         # Проверка прав
         if not await check_approve_permission(interaction, request):
+            closed_requests.discard(self.request_id)
             role_names = {
                 RoleType.ARMY: "Младший лейтенант",
                 RoleType.SUPPLY_ACCESS: "Подполковник",
@@ -377,13 +387,6 @@ class RejectRoleButton(
                 ephemeral=True,
             )
             return
-
-        if self.request_id in closed_requests:
-            await interaction.response.send_message(
-                "Этот запрос уже был обработан.", ephemeral=True
-            )
-            return
-        closed_requests.add(self.request_id)
 
         request.approved = False
         request.checked = True

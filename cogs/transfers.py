@@ -24,6 +24,7 @@ class Transfers(commands.Cog):
         self.bot = bot
 
     @commands.command(name="updtransfer")
+    @commands.has_permissions(administrator=True)
     async def update_command(self, ctx: commands.Context):
         await update_bottom_message(self.bot, ctx.channel.id)
 
