@@ -16,7 +16,7 @@ class Dismissal(commands.Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
 
-    @commands.command(name="updd")
+    @commands.command(name="refresh_dismissal")
     @commands.has_permissions(administrator=True)
     async def update_command(self, ctx: commands.Context):
         if ctx.channel.id != channel_id:
