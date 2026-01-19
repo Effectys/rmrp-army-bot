@@ -1,10 +1,10 @@
 import discord.ui
 
+from config import nickname_regex
 from database import divisions
 from database.counters import get_next_id
 from database.models import ReinstatementData, ReinstatementRequest
 from ui.modals.labels import name_component, screenshot_label, static_reminder
-from config import nickname_regex
 from ui.views.reinstatement import (
     ApproveReinstatementButton,
     RejectReinstatementButton,

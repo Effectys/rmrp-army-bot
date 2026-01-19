@@ -13,7 +13,7 @@ from database.models import Division, TransferRequest, User
 from ui.views.indicators import indicator_view
 from utils.audit import AuditAction, audit_logger
 from utils.roles import to_division, to_position
-from utils.user_data import needs_static_input, get_initiator
+from utils.user_data import get_initiator
 
 
 class TransferView(discord.ui.LayoutView):

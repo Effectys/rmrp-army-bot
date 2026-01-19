@@ -8,7 +8,7 @@ import config
 from database.models import Blacklist, DismissalRequest, DismissalType, User
 from ui.modals.dismissal import DismissalModal
 from utils.audit import AuditAction, audit_logger
-from utils.user_data import format_game_id, needs_static_input, get_initiator
+from utils.user_data import format_game_id, get_initiator
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +26,7 @@ async def open_modal(interaction: discord.Interaction, d_type: DismissalType):
     full_name = user_db.full_name or ""
     await interaction.response.send_modal(DismissalModal(d_type, full_name))
 
+
 async def psj_button_callback(interaction: discord.Interaction):
     user = await get_initiator(interaction)
     if not user or user.rank is None:
@@ -35,6 +36,7 @@ async def psj_button_callback(interaction: discord.Interaction):
         )
         return
     await open_modal(interaction, DismissalType.PJS)
+
 
 class DismissalApplyView(discord.ui.LayoutView):
     def __init__(self):

@@ -211,4 +211,4 @@ class RankIndex:
 SUPPLY_INFO_LINK = "https://discord.com/channels/1245655012550512670/1251166871064019015/1460964263140003860"
 
 CAPTAIN_RANK_INDEX = RankIndex.CAPTAIN
-nickname_regex = re.compile('^([А-я][а-я]+) ([А-я][а-я]+)$')
+nickname_regex = re.compile("^([А-я][а-я]+) ([А-я][а-я]+)$")

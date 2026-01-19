@@ -2,9 +2,8 @@ import discord
 
 import config
 import texts
-from database.models import User
 from ui.modals.supplies_audit import ClearSupplyModal, GiveSupplyModal
-from utils.user_data import needs_static_input, get_initiator
+from utils.user_data import get_initiator
 
 
 async def give_button_callback(interaction: discord.Interaction):

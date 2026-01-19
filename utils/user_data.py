@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 import discord
 
 from utils.exceptions import StaticInputRequired
+
 if TYPE_CHECKING:
     from database.models import User
 
