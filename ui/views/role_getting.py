@@ -12,6 +12,7 @@ from database import divisions
 from database.models import RoleRequest, RoleType, User
 from ui.views.indicators import indicator_view
 from utils.audit import AuditAction, audit_logger
+from utils.exceptions import StaticInputRequired
 from utils.user_data import format_game_id, get_initiator, update_user_name_if_changed
 
 closed_requests = set()
@@ -156,7 +157,11 @@ async def check_approve_permission(
     interaction: Interaction[ClientT], request: RoleRequest
 ) -> bool:
     """Проверить права на одобрение заявки в зависимости от типа."""
-    user = await get_initiator(interaction)
+    try:
+        user = await get_initiator(interaction)
+    except StaticInputRequired:
+        return False
+
     if not user:
         return False
 
