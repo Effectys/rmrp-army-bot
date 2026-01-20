@@ -147,11 +147,22 @@ class UserEdit(commands.Cog):
                 logger.warning(f"Failed to sync dismissed user {user.id}: {e}")
 
             await audit_logger.log_action(
-                AuditAction.DISMISSED, interaction.user, user, display_info=old_info, additional_info={"Причина": reason_input.value}
+                AuditAction.DISMISSED,
+                interaction.user,
+                user,
+                display_info=old_info,
+                additional_info={"Причина": reason_input.value},
             )
 
         confirm_modal.add_item(reason_input)
-        confirm_modal.add_item(discord.ui.TextDisplay(f"-# Вы собираетесь уволить {user.display_name} со звания {RANK_EMOJIS[user_info.rank]} {RANKS[user_info.rank] if user_info.rank is not None else 'Не найдено'}."))
+        rank_name = (
+            RANKS[user_info.rank] if user_info.rank is not None else "Не найдено"
+        )
+        confirm_modal.add_item(
+            discord.ui.TextDisplay(
+                f"-# Вы собираетесь уволить {user.display_name} со звания {rank_name}"
+            )
+        )
         confirm_modal.on_submit = on_submit
 
         await interaction.response.send_modal(confirm_modal)
