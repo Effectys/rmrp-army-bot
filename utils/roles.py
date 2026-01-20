@@ -42,13 +42,16 @@ def to_division(
 
 def to_rank(initial_roles: list[discord.Role], rank: int | None) -> list[Role]:
     target_role_ids = set()
+
     if rank is not None:
+        target_role_ids.add(config.RoleId.MILITARY.value)
         if rank >= 4:
             target_role_ids.add(RoleId.CONTRACT.value)
         target_role_ids.add(config.RANK_ROLES[config.RANKS[rank]])
 
     roles_to_remove = set(config.RANK_ROLES.values())
     roles_to_remove.add(RoleId.CONTRACT.value)
+    roles_to_remove.add(RoleId.MILITARY.value)
 
     return _apply_role_changes(initial_roles, roles_to_remove, target_role_ids)
 

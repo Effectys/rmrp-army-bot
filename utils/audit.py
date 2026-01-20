@@ -69,6 +69,8 @@ class AuditLogger:
         action: AuditAction,
         initiator: discord.Member,
         target: discord.Member | discord.User | int | str,
+        display_info: User | None = None,
+        additional_info: dict[str, str] | None = None,
     ):
         mentions = set()
         if isinstance(target, (discord.Member, discord.User)):
@@ -78,8 +80,11 @@ class AuditLogger:
         mentions.add(initiator.id)
 
         initiator_info = await User.find_one(User.discord_id == initiator.id)
+
         target_info = None
-        if isinstance(target, (discord.Member, discord.User)):
+        if display_info is not None:
+            target_info = display_info
+        elif isinstance(target, (discord.Member, discord.User)):
             target_info = await User.find_one(User.discord_id == target.id)
         elif isinstance(target, int):
             target_info = await User.find_one(User.discord_id == target)
@@ -123,6 +128,10 @@ class AuditLogger:
             if mentions
             else None
         )
+
+        for key, value in (additional_info or {}).items():
+            embed.add_field(name=key, value=value, inline=False)
+
         await self.bot.get_channel(channel_id).send(content=mention_text, embed=embed)
 
 

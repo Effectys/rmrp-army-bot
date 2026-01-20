@@ -1,3 +1,4 @@
+import copy
 import logging
 
 import discord
@@ -71,12 +72,8 @@ class UserEdit(commands.Cog):
         try:
             roles = member.roles
 
-            if user_info.division is not None:
-                roles = to_division(roles, user_info.division)
-
-            if user_info.rank is not None:
-                roles = to_rank(roles, user_info.rank)
-
+            roles = to_division(roles, user_info.division)
+            roles = to_rank(roles, user_info.rank)
             roles = to_position(roles, user_info.division, user_info.position)
 
             if user_info.rank is None:
@@ -124,40 +121,40 @@ class UserEdit(commands.Cog):
         if not await self._check_permissions(interaction, user_info):
             return
 
-        view = discord.ui.View(timeout=300)
+        confirm_modal = discord.ui.Modal(title="Причина увольнения", timeout=120)
+        reason_input = discord.ui.TextInput(
+            label="Причина увольнения",
+            style=discord.TextStyle.paragraph,
+            max_length=1000,
+        )
 
-        async def confirm_callback(btn_inter: discord.Interaction):
-            old_rank = user_info.rank
+        async def on_submit(modal_interaction: discord.Interaction):
+            old_info = copy.deepcopy(user_info)
 
             user_info.rank = None
             user_info.division = None
             user_info.position = None
             await user_info.save()
 
-            await btn_inter.response.edit_message(
-                content=f"✅ {user.mention} уволен.", view=None
+            await modal_interaction.response.send_message(
+                content=f"✅ {user.mention} уволен.", ephemeral=True
             )
 
             try:
                 member = await interaction.client.getch_member(user.id)
-                await self._sync_member_discord(btn_inter, member, user_info)
+                await self._sync_member_discord(interaction, member, user_info)
             except discord.HTTPException as e:
                 logger.warning(f"Failed to sync dismissed user {user.id}: {e}")
 
-            if old_rank is not None:
-                await audit_logger.log_action(
-                    AuditAction.DISMISSED, interaction.user, user
-                )
+            await audit_logger.log_action(
+                AuditAction.DISMISSED, interaction.user, user, display_info=old_info, additional_info={"Причина": reason_input.value}
+            )
 
-        confirm_button = discord.ui.Button(
-            label="Подтвердить увольнение", style=discord.ButtonStyle.danger
-        )
-        confirm_button.callback = confirm_callback
-        view.add_item(confirm_button)
+        confirm_modal.add_item(reason_input)
+        confirm_modal.add_item(discord.ui.TextDisplay(f"-# Вы собираетесь уволить {user.display_name} со звания {RANK_EMOJIS[user_info.rank]} {RANKS[user_info.rank] if user_info.rank is not None else 'Не найдено'}."))
+        confirm_modal.on_submit = on_submit
 
-        await interaction.response.send_message(
-            f"Вы уверены, что хотите уволить {user.mention}?", view=view, ephemeral=True
-        )
+        await interaction.response.send_modal(confirm_modal)
 
     async def fast_promotion_callback(
         self, interaction: discord.Interaction, user: discord.Member
