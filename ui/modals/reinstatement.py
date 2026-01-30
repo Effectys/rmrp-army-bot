@@ -57,7 +57,7 @@ class ReinstatementModal(discord.ui.Modal, title="Заявление на вос
         )
         await request.create()
 
-        division = divisions.get_division_by_abbreviation("ВК")
+        division = divisions.get_division_by_abbreviation("ВП")
 
         view = discord.ui.View()
         view.add_item(ApproveReinstatementButton(request_id=request.id))
