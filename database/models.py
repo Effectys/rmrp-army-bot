@@ -437,7 +437,7 @@ class TransferRequest(Document):
         embed.add_field(
             name="Номер паспорта", value=format_game_id(self.static), inline=True
         )
-        embed.add_field(name="Возраст и имя в игре", value=self.name_age, inline=False)
+        embed.add_field(name="Возраст и имя в реальной жизни", value=self.name_age, inline=False)
         embed.add_field(name="Часовой пояс", value=self.timezone, inline=True)
         embed.add_field(
             name="Онлайн и прайм тайм", value=self.online_prime, inline=True
