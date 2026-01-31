@@ -176,7 +176,8 @@ class DismissalManagementButton(
                 penalty_applied = True
 
             await audit_logger.log_action(
-                AuditAction.DISMISSED, interaction.user, req.user_id
+                AuditAction.DISMISSED, interaction.user, req.user_id,
+                additional_info={"Причина": f"[Рапорт на увольнение #{req.id}]({interaction.message.jump_url})"}
             )
 
             target_user_db.rank = None
