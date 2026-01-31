@@ -13,7 +13,8 @@ from database.models import RoleRequest, RoleType, User
 from ui.views.indicators import indicator_view
 from utils.audit import AuditAction, audit_logger
 from utils.exceptions import StaticInputRequired
-from utils.user_data import format_game_id, get_initiator, update_user_name_if_changed
+from utils.notifications import notify_role_approved, notify_role_rejected
+from utils.user_data import format_game_id, get_initiator
 
 closed_requests = set()
 
@@ -322,6 +323,16 @@ class ApproveRoleButton(
                 reason=f"Одобрено роль Гос. сотрудник by {interaction.user.id}",
             )
 
+        # Уведомление в ЛС
+        role_names = {
+            RoleType.ARMY: "ВС РФ",
+            RoleType.SUPPLY_ACCESS: "Доступ к поставке",
+            RoleType.GOV_EMPLOYEE: "Гос. сотрудник",
+        }
+        await notify_role_approved(
+            interaction.client, request.user, role_names.get(request.role_type, "Роль")
+        )
+
 
 class RejectRoleButton(
     discord.ui.DynamicItem[discord.ui.Button], template=r"reject_role:(?P<id>\d+)"
@@ -387,4 +398,14 @@ class RejectRoleButton(
             view=indicator_view(
                 f"Отклонил {interaction.user.display_name}", emoji="👎"
             ),
+        )
+
+        # Уведомление в ЛС
+        role_names = {
+            RoleType.ARMY: "ВС РФ",
+            RoleType.SUPPLY_ACCESS: "Доступ к поставке",
+            RoleType.GOV_EMPLOYEE: "Гос. сотрудник",
+        }
+        await notify_role_rejected(
+            interaction.client, request.user, role_names.get(request.role_type, "Роль")
         )

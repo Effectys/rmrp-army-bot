@@ -8,6 +8,7 @@ import config
 from database.models import Blacklist, DismissalRequest, DismissalType, User
 from ui.modals.dismissal import DismissalModal
 from utils.audit import AuditAction, audit_logger
+from utils.notifications import notify_blacklisted, notify_dismissed
 from utils.user_data import format_game_id, get_initiator
 
 logger = logging.getLogger(__name__)
@@ -176,8 +177,13 @@ class DismissalManagementButton(
                 penalty_applied = True
 
             await audit_logger.log_action(
-                AuditAction.DISMISSED, interaction.user, req.user_id,
-                additional_info={"Причина": f"[Рапорт на увольнение #{req.id}]({interaction.message.jump_url})"}
+                AuditAction.DISMISSED,
+                interaction.user,
+                req.user_id,
+                additional_info={
+                    "Причина": f"[Рапорт на увольнение #{req.id}]"
+                               f"({interaction.message.jump_url})"
+                },
             )
 
             target_user_db.rank = None
@@ -267,6 +273,17 @@ class DismissalManagementButton(
             req.reviewer_id = interaction.user.id
             req.reviewed_at = datetime.datetime.now()
             await req.save()
+
+            # Уведомление в ЛС об увольнении
+            await notify_dismissed(
+                interaction.client, req.user_id, "Увольнение по рапорту", by_report=True
+            )
+
+            # Уведомление о ЧС если применена неустойка
+            if penalty_applied:
+                await notify_blacklisted(
+                    interaction.client, req.user_id, "Неустойка", "14 дней"
+                )
 
             embed = await req.to_embed(interaction.client)
             if penalty_applied:

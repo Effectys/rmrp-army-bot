@@ -12,6 +12,7 @@ from database import divisions
 from database.models import Division, TransferRequest, User
 from ui.views.indicators import indicator_view
 from utils.audit import AuditAction, audit_logger
+from utils.notifications import notify_transfer_approved, notify_transfer_rejected
 from utils.roles import to_division, to_position
 from utils.user_data import get_initiator
 
@@ -265,6 +266,11 @@ class ApproveTransferButton(
             action=action, initiator=interaction.user, target=user.discord_id
         )
 
+        # Уведомление в ЛС
+        await notify_transfer_approved(
+            interaction.client, request.user_id, self.division.name
+        )
+
 
 class RejectTransferButton(
     discord.ui.DynamicItem[discord.ui.Button],
@@ -335,6 +341,9 @@ class RejectTransferButton(
                 embed=await request.to_embed(interaction.client),
                 view=indicator_view("Отклонено", emoji="👎"),
             )
+
+            # Уведомление в ЛС
+            await notify_transfer_rejected(interaction.client, request.user_id, reason)
 
         modal.on_submit = on_modal_submit
         await interaction.response.send_modal(modal)

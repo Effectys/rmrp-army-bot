@@ -8,6 +8,7 @@ import config
 from bot import Bot
 from database.models import Blacklist as BlacklistModel
 from database.models import User
+from utils.notifications import notify_blacklisted, notify_unblacklisted
 from utils.user_data import format_game_id, get_initiator
 
 channel_id = config.CHANNELS["blacklist"]
@@ -71,6 +72,11 @@ class Blacklist(commands.Cog):
 
         db_user.blacklist = blacklist
         await db_user.save()
+
+        # Уведомление в ЛС
+        duration = f"{days} дней" if days > 0 else "Бессрочно"
+        await notify_blacklisted(self.bot, user.id, reason, duration)
+
         await interaction.response.send_message(
             f"Гражданин {user.mention} был добавлен в черный список.", ephemeral=True
         )
@@ -148,6 +154,9 @@ class Blacklist(commands.Cog):
         old_blacklist = db_user.blacklist
         db_user.blacklist = None
         await db_user.save()
+
+        # Уведомление в ЛС
+        await notify_unblacklisted(self.bot, user.id)
 
         await interaction.response.send_message(
             f"Гражданин {user.mention} был снят с черного списка.", ephemeral=True

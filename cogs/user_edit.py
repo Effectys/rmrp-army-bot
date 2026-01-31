@@ -11,6 +11,12 @@ from config import RANK_EMOJIS, RANKS
 from database import divisions
 from database.models import User
 from utils.audit import AuditAction, audit_logger
+from utils.notifications import (
+    notify_demoted,
+    notify_dismissed,
+    notify_position_changed,
+    notify_promoted,
+)
 from utils.roles import to_division, to_position, to_rank
 from utils.user_data import format_game_id, get_initiator
 
@@ -77,7 +83,11 @@ class UserEdit(commands.Cog):
             roles = to_position(roles, user_info.division, user_info.position)
 
             if user_info.rank is None:
-                full_name = user_info.full_name if (len(user_info.full_name) + 9) <= 32 else (user_info.short_name or "Неизвестный")
+                full_name = (
+                    user_info.full_name
+                    if (len(user_info.full_name) + 9) <= 32
+                    else (user_info.short_name or "Неизвестный")
+                )
                 new_nick = f"Уволен | {full_name}"
             else:
                 new_nick = user_info.discord_nick
@@ -154,6 +164,11 @@ class UserEdit(commands.Cog):
                 additional_info={"Причина": reason_input.value},
             )
 
+            # Уведомление в ЛС
+            await notify_dismissed(
+                interaction.client, user.id, reason_input.value, by_report=False
+            )
+
         confirm_modal.add_item(reason_input)
         rank_name = (
             RANKS[user_info.rank] if user_info.rank is not None else "Не найдено"
@@ -211,6 +226,10 @@ class UserEdit(commands.Cog):
         await audit_logger.log_action(action, interaction.user, user)
 
         rank_name = config.RANKS[user_info.rank]
+
+        # Уведомление в ЛС
+        await notify_promoted(interaction.client, user.id, rank_name)
+
         await interaction.response.send_message(
             f"📈 {user.mention} повышен до звания **{rank_name}**.", ephemeral=True
         )
@@ -270,7 +289,7 @@ class UserEdit(commands.Cog):
                         user_info.first_name = name_input.value
                         user_info.last_name = ""
 
-                if static_input.value and static_input.value.replace('-', '').isdigit():
+                if static_input.value and static_input.value.replace("-", "").isdigit():
                     user_info.static = int(static_input.value)
 
                 await user_info.save()
@@ -346,8 +365,16 @@ class UserEdit(commands.Cog):
             if old_rank != new_rank:
                 if (old_rank or -1) < new_rank:
                     action = AuditAction.PROMOTED
+                    # Уведомление в ЛС о повышении
+                    await notify_promoted(
+                        interaction.client, user.id, config.RANKS[new_rank]
+                    )
                 else:
                     action = AuditAction.DEMOTED
+                    # Уведомление в ЛС о понижении
+                    await notify_demoted(
+                        interaction.client, user.id, config.RANKS[new_rank]
+                    )
                 await audit_logger.log_action(action, interaction.user, user)
 
             await interaction.response.edit_message(
@@ -380,6 +407,10 @@ class UserEdit(commands.Cog):
                 if old_position != user_info.position:
                     await audit_logger.log_action(
                         AuditAction.POSITION_CHANGED, modal_interaction.user, user
+                    )
+                    # Уведомление в ЛС
+                    await notify_position_changed(
+                        modal_interaction.client, user.id, user_info.position
                     )
 
                 await self._sync_member_discord(modal_interaction, user, user_info)
@@ -522,6 +553,10 @@ class UserEdit(commands.Cog):
                 if old_position != user_info.position:
                     await audit_logger.log_action(
                         AuditAction.POSITION_CHANGED, interaction.user, user
+                    )
+                    # Уведомление в ЛС
+                    await notify_position_changed(
+                        interaction.client, user.id, user_info.position
                     )
 
                 await self._sync_member_discord(interaction, user, user_info)

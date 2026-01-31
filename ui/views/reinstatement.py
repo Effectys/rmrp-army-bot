@@ -8,10 +8,15 @@ from discord._types import ClientT
 
 import config
 import texts
+from config import RANKS
 from database import divisions
 from database.models import ReinstatementRequest, User
 from ui.views.indicators import indicator_view
 from utils.audit import AuditAction, audit_logger
+from utils.notifications import (
+    notify_reinstatement_approved,
+    notify_reinstatement_rejected,
+)
 from utils.roles import to_division, to_position, to_rank
 from utils.user_data import (
     get_full_name,
@@ -148,6 +153,10 @@ class ReinstatementRankSelect(
             target=user.discord_id,
         )
 
+        # Уведомление в ЛС
+        rank_name = RANKS[request.rank] if request.rank is not None else "Неизвестно"
+        await notify_reinstatement_approved(interaction.client, request.user, rank_name)
+
 
 basic_roles = config.RoleId.ATTESTATION, config.RoleId.REINFORCEMENT
 
@@ -274,3 +283,6 @@ class RejectReinstatementButton(
                 f"Отклонил {interaction.user.display_name}", emoji="👎"
             ),
         )
+
+        # Уведомление в ЛС
+        await notify_reinstatement_rejected(interaction.client, request.user)

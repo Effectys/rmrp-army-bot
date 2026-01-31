@@ -86,7 +86,7 @@ class User(Document):
         if self.rank is not None:
             parts.append(config.RANKS_SHORT[self.rank])
         if self.full_name:
-            if len(" | ".join(parts) + ' ' + self.full_name) > 32:
+            if len(" | ".join(parts) + " " + self.full_name) > 32:
                 parts.append(self.short_name or self.full_name)
             else:
                 parts.append(self.full_name)
@@ -437,7 +437,9 @@ class TransferRequest(Document):
         embed.add_field(
             name="Номер паспорта", value=format_game_id(self.static), inline=True
         )
-        embed.add_field(name="Возраст и имя в реальной жизни", value=self.name_age, inline=False)
+        embed.add_field(
+            name="Возраст и имя в реальной жизни", value=self.name_age, inline=False
+        )
         embed.add_field(name="Часовой пояс", value=self.timezone, inline=True)
         embed.add_field(
             name="Онлайн и прайм тайм", value=self.online_prime, inline=True

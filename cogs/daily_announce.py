@@ -12,7 +12,8 @@ logger = logging.getLogger(__name__)
 
 # 21:00 по МСК
 DAILY_TIME = datetime.time(hour=18, minute=0, tzinfo=datetime.timezone.utc)
-PICS_PATH = './daily_pics'
+PICS_PATH = "./daily_pics"
+
 
 class DailyAnnounce(commands.Cog):
     def __init__(self, bot: Bot):
@@ -36,7 +37,7 @@ class DailyAnnounce(commands.Cog):
 
         for pic in os.listdir(PICS_PATH):
             try:
-                channel_id = int(pic.split('.')[0])
+                channel_id = int(pic.split(".")[0])
             except ValueError:
                 logger.warning(f"Invalid file name '{pic}', skipping.")
                 continue
@@ -50,9 +51,13 @@ class DailyAnnounce(commands.Cog):
             file_path = os.path.join(PICS_PATH, pic)
 
             try:
-                await channel.send(file=discord.File(fp=file_path, filename='daily_announce.png'))
+                await channel.send(
+                    file=discord.File(fp=file_path, filename="daily_announce.png")
+                )
             except discord.Forbidden:
-                logger.warning(f"Permission denied to send message in channel ID {channel_id}.")
+                logger.warning(
+                    f"Permission denied to send message in channel ID {channel_id}."
+                )
             except Exception as e:
                 logger.error(f"Failed to send message in channel ID {channel_id}: {e}")
 
