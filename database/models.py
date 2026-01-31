@@ -86,7 +86,7 @@ class User(Document):
         if self.rank is not None:
             parts.append(config.RANKS_SHORT[self.rank])
         if self.full_name:
-            if len(" | ".join(parts)) > 32:
+            if len(" | ".join(parts) + ' ' + self.full_name) > 32:
                 parts.append(self.short_name or self.full_name)
             else:
                 parts.append(self.full_name)

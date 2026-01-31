@@ -77,7 +77,7 @@ class UserEdit(commands.Cog):
             roles = to_position(roles, user_info.division, user_info.position)
 
             if user_info.rank is None:
-                full_name = user_info.full_name or user_info.short_name or "Неизвестный"
+                full_name = user_info.full_name if (len(user_info.full_name) + 9) <= 32 else (user_info.short_name or "Неизвестный")
                 new_nick = f"Уволен | {full_name}"
             else:
                 new_nick = user_info.discord_nick
