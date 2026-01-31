@@ -34,10 +34,6 @@ class ReinstatementModal(discord.ui.Modal, title="Заявление на вос
             )
             return
 
-        await interaction.response.send_message(
-            "### Заявление отправлено на рассмотрение.", ephemeral=True
-        )
-
         if not nickname_regex.match(self.name.value):
             await interaction.response.send_message(
                 "### Вы ввели некорректное имя и фамилию. "
@@ -45,6 +41,10 @@ class ReinstatementModal(discord.ui.Modal, title="Заявление на вос
                 ephemeral=True,
             )
             return
+
+        await interaction.response.send_message(
+            "### Заявление отправлено на рассмотрение.", ephemeral=True
+        )
 
         request = ReinstatementRequest(
             id=await get_next_id("reinstatement_requests"),
@@ -57,7 +57,7 @@ class ReinstatementModal(discord.ui.Modal, title="Заявление на вос
         )
         await request.create()
 
-        division = divisions.get_division_by_abbreviation("ВП")
+        division = divisions.get_division_by_abbreviation("УВП")
 
         view = discord.ui.View()
         view.add_item(ApproveReinstatementButton(request_id=request.id))
