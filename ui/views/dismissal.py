@@ -242,7 +242,9 @@ class DismissalManagementButton(
                 )
                 if blacklist_channel:
                     bl_embed = discord.Embed(
-                        title="📋 Автоматический ЧС", color=discord.Color.dark_red()
+                        title="📋 Автоматический ЧС",
+                        color=discord.Color.dark_red(),
+                        timestamp=datetime.datetime.now(),
                     )
                     author_name = (
                         f"Составитель: {officer.full_name} | "
@@ -259,7 +261,11 @@ class DismissalManagementButton(
                         inline=False,
                     )
                     bl_embed.add_field(name="Причина", value="Неустойка", inline=False)
-                    bl_embed.add_field(name="Срок", value="14 дней", inline=False)
+
+                    ends_at = datetime.datetime.now() + datetime.timedelta(days=14)
+                    ends_at_fmt = discord.utils.format_dt(ends_at, style="d")
+
+                    bl_embed.add_field(name="Срок", value=f"14 дней (до {ends_at_fmt})", inline=False)
                     await blacklist_channel.send(
                         content=f"-# ||<@{req.user_id}> <@{officer.discord_id}>"
                         + " ".join(
