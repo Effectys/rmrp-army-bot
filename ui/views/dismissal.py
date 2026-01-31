@@ -201,6 +201,14 @@ class DismissalManagementButton(
                         if role and role in target_member.roles:
                             roles_to_remove.append(role)
 
+                        for pos in div.positions:
+                            if pos.role_id not in target_member.roles:
+                                continue
+
+                            pos_role = interaction.guild.get_role(pos.role_id)
+                            if pos_role and pos_role in target_member.roles:
+                                roles_to_remove.append(pos_role)
+
                     for role_enum in config.RoleId:
                         role = interaction.guild.get_role(role_enum.value)
                         if role and role in target_member.roles:
