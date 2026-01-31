@@ -263,7 +263,7 @@ class DismissalManagementButton(
                     await blacklist_channel.send(
                         content=f"-# ||<@{req.user_id}> <@{officer.discord_id}>"
                         + " ".join(
-                            f"<@{mention}>" for mention in config.BLACKLIST_MENTIONS
+                            f"<@&{mention}>" for mention in config.BLACKLIST_MENTIONS
                         )
                         + "||",
                         embed=bl_embed,
