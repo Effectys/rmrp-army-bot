@@ -7,6 +7,7 @@ import discord
 from discord import Interaction
 
 import config
+from config import PENALTY_ROLES
 from database.counters import get_next_id
 from database.models import SupplyRequest, User
 from ui.modals.supplies import ItemAmountModal
@@ -445,6 +446,15 @@ class SupplyCreateView(discord.ui.View):
         if not user or (user.rank or 0) < 4:
             await interaction.response.send_message(
                 "❌ Доступно со звания Старший Сержант.", ephemeral=True
+            )
+            return
+
+        user_roles = [role.id for role in interaction.user.roles]
+        if any(role_id in PENALTY_ROLES for role_id in user_roles):
+            await interaction.response.send_message(
+                "❌ Вы не можете создавать заявки на склад, "
+                "пока у вас есть активные дисциплинарные взыскания.",
+                ephemeral=True,
             )
             return
 
