@@ -263,7 +263,7 @@ class DismissalManagementButton(
             if penalty_applied:
                 embed.set_footer(text="Автоматически выдан ЧС за неустойку.")
 
-            await interaction.response.edit_message(
+            await interaction.message.edit(
                 content=f"<@{req.user_id}> {interaction.user.mention}",
                 embed=embed,
                 view=None,
