@@ -288,14 +288,6 @@ class ApproveRoleButton(
 
         elif request.role_type == RoleType.SUPPLY_ACCESS:
             # Логика для Доступ к поставке
-            user = await User.find_one(User.discord_id == request.user)
-            if not user:
-                user = User(discord_id=request.user)
-                await user.save()
-            await update_user_name_if_changed(
-                user, request.extended_data.full_name, interaction.user
-            )
-
             role = interaction.guild.get_role(config.RoleId.SUPPLY_ACCESS.value)
             new_roles = list(user_discord.roles)
             if role:
