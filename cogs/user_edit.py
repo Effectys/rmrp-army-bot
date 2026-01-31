@@ -290,7 +290,7 @@ class UserEdit(commands.Cog):
                         user_info.last_name = ""
 
                 if static_input.value and static_input.value.replace("-", "").isdigit():
-                    user_info.static = int(static_input.value)
+                    user_info.static = int(static_input.value.replace("-", ""))
 
                 await user_info.save()
 
