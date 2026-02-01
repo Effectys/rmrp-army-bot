@@ -172,7 +172,7 @@ class OldApproveButton(
         view.add_item(RejectTransferButton(request_id=self.request_id))
 
         new_division = divisions.get_division(request.new_division_id)
-        mentions = [
+        mentions = [f'<@{request.user_id}>'] + [
             f"<@&{pos.role_id}>"
             for pos in new_division.positions
             if pos.privilege.value >= 2
