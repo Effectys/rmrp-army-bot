@@ -5,6 +5,7 @@ import re
 import discord
 
 import config
+from config import PENALTY_ROLES, INVESTIGATION_ROLE
 from database.models import Blacklist, DismissalRequest, DismissalType, User
 from ui.modals.dismissal import DismissalModal
 from utils.audit import AuditAction, audit_logger
@@ -21,6 +22,16 @@ async def open_modal(interaction: discord.Interaction, d_type: DismissalType):
     if not user_db:
         await interaction.response.send_message(
             "❌ Вас нет в базе данных.", ephemeral=True
+        )
+        return
+
+    user_roles = [role.id for role in interaction.user.roles]
+    if any(rid in PENALTY_ROLES for rid in user_roles) or INVESTIGATION_ROLE in user_roles:
+        await interaction.response.send_message(
+            "❌ Вы не можете подать рапорт на увольнение, "
+            "пока у вас есть активные дисциплинарные взыскания "
+            "или в отношении вас ведётся расследование.",
+            ephemeral=True,
         )
         return
 
