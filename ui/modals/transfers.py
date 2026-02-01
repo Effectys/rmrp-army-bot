@@ -93,7 +93,7 @@ class TransferModal(discord.ui.Modal):
             if status == "NEW_DIVISION_REVIEW"
             else divisions.get_division(request.old_division_id)
         )
-        mentions = [
+        mentions = [f"{interaction.user.mention}"] + [
             f"<@&{pos.role_id}>"
             for pos in first_division.positions
             if pos.privilege.value >= 2

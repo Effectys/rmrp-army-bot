@@ -193,7 +193,7 @@ class DismissalManagementButton(
                 req.user_id,
                 additional_info={
                     "Причина": f"[Рапорт на увольнение #{req.id}]"
-                               f"({interaction.message.jump_url})"
+                    f"({interaction.message.jump_url})"
                 },
             )
 
@@ -286,13 +286,15 @@ class DismissalManagementButton(
                         bl_embed.add_field(
                             name="Доказательства",
                             value=f"[Перейти к логу]({audit_msg.jump_url})",
-                            inline=False
+                            inline=False,
                         )
 
                     ends_at = datetime.datetime.now() + datetime.timedelta(days=14)
                     ends_at_fmt = discord.utils.format_dt(ends_at, style="d")
 
-                    bl_embed.add_field(name="Срок", value=f"14 дней (до {ends_at_fmt})", inline=False)
+                    bl_embed.add_field(
+                        name="Срок", value=f"14 дней (до {ends_at_fmt})", inline=False
+                    )
                     await blacklist_channel.send(
                         content=f"-# ||<@{req.user_id}> <@{officer.discord_id}>"
                         + " ".join(

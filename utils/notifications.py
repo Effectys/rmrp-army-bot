@@ -40,7 +40,7 @@ async def notify_reinstatement_approved(bot, user_id: int, rank: str) -> bool:
     embed = discord.Embed(
         title=f"{action_emojis[AuditAction.REINSTATEMENT]} Восстановление одобрено",
         description=f"Ваше заявление на восстановление было одобрено.\n"
-                    f"Вам присвоено звание: **{rank}**.",
+        f"Вам присвоено звание: **{rank}**.",
         color=discord.Color.green(),
     )
     embed.set_footer(text="С возвращением!")
@@ -51,7 +51,7 @@ async def notify_transfer_approved(bot, user_id: int, new_division: str) -> bool
     """Уведомление об одобрении перевода."""
     embed = discord.Embed(
         title=f"{action_emojis[AuditAction.DIVISION_CHANGED]} "
-              f"Перевод в подразделение одобрен",
+        f"Перевод в подразделение одобрен",
         description=f"Ваше заявление на перевод было одобрено.\n"
         f"Вы переведены в подразделение: **{new_division}**.",
         color=discord.Color.blue(),
@@ -104,7 +104,7 @@ async def notify_dismissed(
     embed = discord.Embed(
         title=title,
         description=f"{action_emojis[AuditAction.DISMISSED]} Вы были уволены."
-                    f"\n\n**Причина:** {reason}",
+        f"\n\n**Причина:** {reason}",
         color=discord.Color.red(),
     )
     return await _send_dm(bot, user_id, embed)
@@ -115,7 +115,7 @@ async def notify_blacklisted(bot, user_id: int, reason: str, duration: str) -> b
     embed = discord.Embed(
         title="⬛ Добавление в черный список",
         description=f"Вы были добавлены в черный список.\n\n"
-                    f"**Причина:** {reason}\n**Срок:** {duration}",
+        f"**Причина:** {reason}\n**Срок:** {duration}",
         color=discord.Color.red(),
     )
     return await _send_dm(bot, user_id, embed)

@@ -401,6 +401,8 @@ class TransferRequest(Document):
     async def to_embed(self, bot):
         from database import divisions
 
+        user = await User.find_one(User.discord_id == self.user_id)
+
         old_div = (
             divisions.get_division(self.old_division_id)
             if self.old_division_id
@@ -436,6 +438,11 @@ class TransferRequest(Document):
         embed.add_field(name="Имя Фамилия", value=self.full_name, inline=True)
         embed.add_field(
             name="Номер паспорта", value=format_game_id(self.static), inline=True
+        )
+        embed.add_field(
+            name="Звание",
+            value=config.RANK_EMOJIS[user.rank] + " " + config.RANKS[user.rank],
+            inline=True,
         )
         embed.add_field(
             name="Возраст и имя в реальной жизни", value=self.name_age, inline=False
