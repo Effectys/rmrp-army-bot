@@ -245,7 +245,7 @@ class ApproveTransferButton(
         user = await User.find_one(User.discord_id == request.user_id)
         user.division = request.new_division_id
         user.first_name, user.last_name = request.full_name.split(" ", 1)
-        user.position = None
+        user.position = self.division.positions[-1].name if self.division.positions else None
         await user.save()
 
         user_discord = await interaction.client.getch_member(request.user_id)
