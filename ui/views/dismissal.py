@@ -176,7 +176,7 @@ class DismissalManagementButton(
                 target_user_db.blacklist = blacklist
                 penalty_applied = True
 
-            await audit_logger.log_action(
+            audit_msg = await audit_logger.log_action(
                 AuditAction.DISMISSED,
                 interaction.user,
                 req.user_id,
@@ -260,7 +260,16 @@ class DismissalManagementButton(
                         value=citizen_value,
                         inline=False,
                     )
-                    bl_embed.add_field(name="Причина", value="Неустойка", inline=False)
+                    bl_embed.add_field(
+                        name="Причина",
+                        value="Неустойка",
+                        inline=False
+                    )
+                    bl_embed.add_field(
+                        name="Доказательства",
+                        value=f"[Перейти к логу]({audit_msg.jump_url})",
+                        inline=False
+                    )
 
                     ends_at = datetime.datetime.now() + datetime.timedelta(days=14)
                     ends_at_fmt = discord.utils.format_dt(ends_at, style="d")
