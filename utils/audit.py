@@ -132,7 +132,7 @@ class AuditLogger:
         for key, value in (additional_info or {}).items():
             embed.add_field(name=key, value=value, inline=False)
 
-        await self.bot.get_channel(channel_id).send(content=mention_text, embed=embed)
+        return await self.bot.get_channel(channel_id).send(content=mention_text, embed=embed)
 
 
 audit_logger = AuditLogger()
