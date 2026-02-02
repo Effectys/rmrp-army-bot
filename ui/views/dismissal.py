@@ -282,13 +282,6 @@ class DismissalManagementButton(
                         inline=False
                     )
 
-                    if audit_msg:
-                        bl_embed.add_field(
-                            name="Доказательства",
-                            value=f"[Перейти к логу]({audit_msg.jump_url})",
-                            inline=False,
-                        )
-
                     ends_at = datetime.datetime.now() + datetime.timedelta(days=14)
                     ends_at_fmt = discord.utils.format_dt(ends_at, style="d")
 
