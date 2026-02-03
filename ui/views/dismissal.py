@@ -197,6 +197,7 @@ class DismissalManagementButton(
                 },
             )
 
+            target_user_db.first_name, target_user_db.last_name = req.full_name.split(" ", 1)
             target_user_db.rank = None
             target_user_db.division = None
             target_user_db.position = None
