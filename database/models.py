@@ -347,7 +347,9 @@ class DismissalRequest(Document):
         )
 
         rank_name = (
-            config.RANKS[self.rank_index] if self.rank_index is not None else "Нет"
+            (config.RANK_EMOJIS[self.rank_index] + " " + config.RANKS[self.rank_index])
+            if self.rank_index is not None
+            else "Нет"
         )
         embed.add_field(name="Звание", value=rank_name, inline=False)
 
