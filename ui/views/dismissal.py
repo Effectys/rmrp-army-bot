@@ -220,6 +220,8 @@ class DismissalManagementButton(
                         if role and role in target_member.roles:
                             roles_to_remove.append(role)
 
+                        if not div.positions:
+                            continue
                         for pos in div.positions:
                             if pos.role_id not in target_member.roles:
                                 continue
