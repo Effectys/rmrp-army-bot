@@ -149,7 +149,7 @@ def get_required_rank(role_type: RoleType) -> int:
     ranks = {
         RoleType.ARMY: config.RankIndex.JUNIOR_LIEUTENANT,
         RoleType.SUPPLY_ACCESS: config.RankIndex.LIEUTENANT_COLONEL,
-        RoleType.GOV_EMPLOYEE: config.RankIndex.COLONEL,
+        RoleType.GOV_EMPLOYEE: config.RankIndex.LIEUTENANT_COLONEL,
     }
     return ranks.get(role_type, config.RankIndex.COLONEL)
 
