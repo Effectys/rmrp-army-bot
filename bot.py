@@ -9,25 +9,12 @@ import config
 from database import divisions
 from database.connection import establish_db_connection
 from database.models import User
+from error_handling import _custom_view_on_error, on_tree_error
 from ui.views import load_buttons
 from utils.audit import audit_logger
-from utils.exceptions import StaticInputRequired
 from utils.roles import get_rank_from_roles
 
 logger = logging.getLogger(__name__)
-
-
-_original_view_on_error = discord.ui.View.on_error
-
-
-async def _custom_view_on_error(
-    self, interaction: discord.Interaction, error: Exception, item: discord.ui.Item
-):
-    """Глобальный обработчик ошибок View - игнорирует StaticInputRequired."""
-    if isinstance(error, StaticInputRequired):
-        return
-    await _original_view_on_error(self, interaction, error, item)
-
 
 discord.ui.View.on_error = _custom_view_on_error
 
@@ -86,6 +73,8 @@ class Bot(commands.Bot):
 
         load_buttons(self)
         await self._load_cogs()
+
+        self.tree.on_error = on_tree_error
 
         await self.tree.sync()
         logger.info("Slash commands tree synced")

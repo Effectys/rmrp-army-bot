@@ -5,7 +5,7 @@ import re
 import discord
 
 import config
-from config import PENALTY_ROLES, INVESTIGATION_ROLE
+from config import INVESTIGATION_ROLE, PENALTY_ROLES
 from database.models import Blacklist, DismissalRequest, DismissalType, User
 from ui.modals.dismissal import DismissalModal
 from utils.audit import AuditAction, audit_logger
@@ -26,7 +26,10 @@ async def open_modal(interaction: discord.Interaction, d_type: DismissalType):
         return
 
     user_roles = [role.id for role in interaction.user.roles]
-    if any(rid in PENALTY_ROLES for rid in user_roles) or INVESTIGATION_ROLE in user_roles:
+    if (
+        any(rid in PENALTY_ROLES for rid in user_roles)
+        or INVESTIGATION_ROLE in user_roles
+    ):
         await interaction.response.send_message(
             "❌ Вы не можете подать рапорт на увольнение, "
             "пока у вас есть активные дисциплинарные взыскания "
@@ -167,6 +170,10 @@ class DismissalManagementButton(
                 )
                 return
 
+            await interaction.response.send_message(
+                "✅ Выполняются действия...", ephemeral=True
+            )
+
             penalty_applied = False
 
             days_in_organization = (
@@ -197,7 +204,9 @@ class DismissalManagementButton(
                 },
             )
 
-            target_user_db.first_name, target_user_db.last_name = req.full_name.split(" ", 1)
+            target_user_db.first_name, target_user_db.last_name = req.full_name.split(
+                " ", 1
+            )
             target_user_db.rank = None
             target_user_db.division = None
             target_user_db.position = None
@@ -274,15 +283,11 @@ class DismissalManagementButton(
                         value=citizen_value,
                         inline=False,
                     )
-                    bl_embed.add_field(
-                        name="Причина",
-                        value="Неустойка",
-                        inline=False
-                    )
+                    bl_embed.add_field(name="Причина", value="Неустойка", inline=False)
                     bl_embed.add_field(
                         name="Доказательства",
                         value=f"[Перейти к логу]({audit_msg.jump_url})",
-                        inline=False
+                        inline=False,
                     )
 
                     ends_at = datetime.datetime.now() + datetime.timedelta(days=14)

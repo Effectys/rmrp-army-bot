@@ -215,6 +215,11 @@ class UserEdit(commands.Cog):
             )
             return
 
+        rank_name = config.RANKS[user_info.rank]
+        await interaction.response.send_message(
+            f"📈 {user.mention} повышен до звания **{rank_name}**.", ephemeral=True
+        )
+
         await user_info.save()
         await self._sync_member_discord(interaction, user, user_info)
 
@@ -229,10 +234,6 @@ class UserEdit(commands.Cog):
 
         # Уведомление в ЛС
         await notify_promoted(interaction.client, user.id, rank_name)
-
-        await interaction.response.send_message(
-            f"📈 {user.mention} повышен до звания **{rank_name}**.", ephemeral=True
-        )
 
     async def edit_user_callback(
         self, interaction: discord.Interaction, user: discord.Member
@@ -360,6 +361,10 @@ class UserEdit(commands.Cog):
             user_info.rank = new_rank
             await user_info.save()
 
+            await interaction.response.edit_message(
+                view=self.build_view(user, user_info)
+            )
+
             await self._sync_member_discord(interaction, user, user_info)
 
             if old_rank != new_rank:
@@ -376,10 +381,6 @@ class UserEdit(commands.Cog):
                         interaction.client, user.id, config.RANKS[new_rank]
                     )
                 await audit_logger.log_action(action, interaction.user, user)
-
-            await interaction.response.edit_message(
-                view=self.build_view(user, user_info)
-            )
 
         select_rank.callback = rank_callback
 
@@ -546,6 +547,10 @@ class UserEdit(commands.Cog):
                                 )
                                 return
 
+                await interaction.response.edit_message(
+                    view=self.build_view(user, user_info)
+                )
+
                 old_position = user_info.position
                 user_info.position = new_position_name
                 await user_info.save()
@@ -560,10 +565,6 @@ class UserEdit(commands.Cog):
                     )
 
                 await self._sync_member_discord(interaction, user, user_info)
-
-                await interaction.response.edit_message(
-                    view=self.build_view(user, user_info)
-                )
 
             position_select.callback = position_select_callback
 

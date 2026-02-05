@@ -53,20 +53,22 @@ class TransferModal(discord.ui.Modal):
 
         user = await User.find_one(User.discord_id == interaction.user.id)
 
-        min_rank = config.RankIndex.JUNIOR_SERGEANT if self.destination.abbreviation != "ССО" \
+        min_rank = (
+            config.RankIndex.JUNIOR_SERGEANT
+            if self.destination.abbreviation != "ССО"
             else config.RankIndex.SENIOR_SERGEANT
+        )
 
         if user.rank < min_rank:
             return await interaction.response.send_message(
                 f"### ❌ Отказано в подаче\n"
                 f"В подразделение **{self.destination.abbreviation}** можно вступить только со звания "
                 f"**{config.RANKS[min_rank]}** и выше.",
-                ephemeral=True
+                ephemeral=True,
             )
 
         confirmation_message = "✅ Заявление подаётся..."
         await interaction.response.send_message(confirmation_message, ephemeral=True)
-
 
         division = divisions.get_division(user.division)
         status = "OLD_DIVISION_REVIEW" if division.positions else "NEW_DIVISION_REVIEW"

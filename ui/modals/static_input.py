@@ -32,6 +32,11 @@ class StaticInputModal(discord.ui.Modal, title="Введите ваш стати
         user.static = static_int
         await user.save()
 
+        await interaction.response.send_message(
+            "✅ Статик сохранен. Теперь вы можете повторить действие.",
+            ephemeral=True,
+        )
+
         channel = interaction.client.get_channel(config.CHANNELS["static_log"])
         if channel:
             embed = discord.Embed(
@@ -65,8 +70,3 @@ class StaticInputModal(discord.ui.Modal, title="Введите ваш стати
                 "При несовпадении — измените через команду редактирования.",
                 embed=embed,
             )
-
-        await interaction.response.send_message(
-            "✅ Статик сохранен. Теперь вы можете повторить действие.",
-            ephemeral=True,
-        )
