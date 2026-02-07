@@ -71,7 +71,7 @@ class RoleRequestModal(discord.ui.Modal, title="Заявление на полу
         )
         await request.create()
 
-        view = discord.ui.View()
+        view = discord.ui.View(timeout=None)
         view.add_item(ApproveRoleButton(request_id=request.id))
         view.add_item(RejectRoleButton(request_id=request.id))
         await interaction.channel.send(
@@ -159,7 +159,7 @@ class SupplyAccessModal(discord.ui.Modal, title="Заявление на дос�
             if config.RANKS.index(rank) >= config.RankIndex.LIEUTENANT_COLONEL
         )
 
-        view = discord.ui.View()
+        view = discord.ui.View(timeout=None)
         view.add_item(ApproveRoleButton(request_id=request.id))
         view.add_item(RejectRoleButton(request_id=request.id))
         await interaction.channel.send(
@@ -248,7 +248,7 @@ class GovEmployeeModal(discord.ui.Modal, title="Заявление на роль
             if config.RANKS.index(rank) >= config.RankIndex.COLONEL
         )
 
-        view = discord.ui.View()
+        view = discord.ui.View(timeout=None)
         view.add_item(ApproveRoleButton(request_id=request.id))
         view.add_item(RejectRoleButton(request_id=request.id))
         await interaction.channel.send(

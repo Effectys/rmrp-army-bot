@@ -91,7 +91,7 @@ class TransferModal(discord.ui.Modal):
         )
         await request.create()
 
-        view = discord.ui.View()
+        view = discord.ui.View(timeout=None)
         if status == "NEW_DIVISION_REVIEW":
             view.add_item(
                 ApproveTransferButton(

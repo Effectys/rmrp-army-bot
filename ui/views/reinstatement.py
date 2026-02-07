@@ -215,7 +215,7 @@ class ApproveReinstatementButton(
 
         assert isinstance(interaction.response, InteractionResponse)
 
-        view = discord.ui.View()
+        view = discord.ui.View(timeout=None)
         view.add_item(ReinstatementRankSelect(request_id=self.request_id))
         view.add_item(RejectReinstatementButton(request_id=self.request_id))
 

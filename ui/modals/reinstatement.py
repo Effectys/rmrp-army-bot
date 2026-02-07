@@ -59,7 +59,7 @@ class ReinstatementModal(discord.ui.Modal, title="Заявление на вос
 
         division = divisions.get_division_by_abbreviation("УВП")
 
-        view = discord.ui.View()
+        view = discord.ui.View(timeout=None)
         view.add_item(ApproveReinstatementButton(request_id=request.id))
         view.add_item(RejectReinstatementButton(request_id=request.id))
         await interaction.channel.send(

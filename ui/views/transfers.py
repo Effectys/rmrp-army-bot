@@ -163,7 +163,7 @@ class OldApproveButton(
         request.old_reviewed_at = datetime.datetime.now()
         await request.save()
 
-        view = discord.ui.View()
+        view = discord.ui.View(timeout=None)
         view.add_item(
             ApproveTransferButton(
                 request_id=self.request_id, division_id=request.new_division_id
