@@ -1,4 +1,5 @@
 import logging
+import math
 
 import discord
 from discord import app_commands
@@ -12,6 +13,79 @@ from utils.user_data import format_game_id, get_initiator
 
 logger = logging.getLogger(__name__)
 
+
+class MembersBrowser(discord.ui.LayoutView):
+    def __init__(self, members: list, division_info, members_per_page: int = 25):
+        super().__init__(timeout=300)
+        self.members = members
+        self.division_info = division_info
+        self.per_page = members_per_page
+        self.current_page = 0
+        self.total_pages = math.ceil(len(members) / members_per_page)
+
+        self.render_page()
+
+    def render_page(self):
+        self.clear_items()
+
+        start = self.current_page * self.per_page
+        end = start + self.per_page
+        current_slice = self.members[start:end]
+
+        header_text = (
+            f"## {self.division_info.emoji} {self.division_info.name}: "
+            f"{min(len(self.members), end)}/{len(self.members)} участников"
+        )
+
+        members_text = "\n".join([
+            f"{i}. {RANK_EMOJIS[u.rank or 0]} "
+            f"`{format_game_id(u.static) if u.static else 'N // A'}` "
+            f"<@{u.discord_id}> "
+            f"❯ {u.full_name or 'Без имени'} "
+            f"❯ {u.position or 'Участник'}"
+            for i, u in current_slice
+        ])
+
+        container = discord.ui.Container()
+        container.add_item(discord.ui.TextDisplay(header_text))
+        container.add_item(discord.ui.Separator())
+        container.add_item(discord.ui.TextDisplay(members_text))
+        container.add_item(discord.ui.TextDisplay(f"Страница: `{self.current_page + 1}` из `{self.total_pages}`"))
+        container.add_item(discord.ui.Separator())
+
+        action_row = discord.ui.ActionRow()
+
+        btn_prev = discord.ui.Button(
+            emoji="⬅️",
+            style=discord.ButtonStyle.gray,
+            disabled=(self.current_page == 0)
+        )
+        btn_prev.callback = self.on_prev
+        action_row.add_item(btn_prev)
+
+        btn_next = discord.ui.Button(
+            emoji="➡️",
+            style=discord.ButtonStyle.gray,
+            disabled=(self.current_page >= self.total_pages - 1)
+        )
+        btn_next.callback = self.on_next
+        action_row.add_item(btn_next)
+
+        container.add_item(action_row)
+
+        self.add_item(container)
+
+    async def on_prev(self, interaction: discord.Interaction):
+        if self.current_page > 0:
+            self.current_page -= 1
+            self.render_page()
+            await interaction.response.edit_message(view=self)
+
+    async def on_next(self, interaction: discord.Interaction):
+        if self.current_page < self.total_pages - 1:
+            self.current_page += 1
+            self.render_page()
+            await interaction.response.edit_message(view=self)
 
 class Members(commands.Cog):
     def __init__(self, bot: Bot):
@@ -78,7 +152,6 @@ class Members(commands.Cog):
             return
 
         members = await User.find(User.division == division_id).to_list()
-        members_per_page = 25
 
         def member_sort_key(u: User):
             value = u.rank or 0
@@ -89,85 +162,20 @@ class Members(commands.Cog):
             return value
 
         members.sort(key=member_sort_key, reverse=True)
-        members = list(enumerate(members, start=1))
-        total_members = len(members)
-        total_pages = max(len(members) // members_per_page, 1)
+        members_indexed = list(enumerate(members, start=1))
 
-        if total_members == 0:
-            await interaction.response.send_message(
-                f"## {division_info.emoji} {division_info.name}: 0 участников\n\n"
-                "В этом подразделении пока нет участников.",
-                ephemeral=True,
-            )
+        if not members:
+            empty_container = discord.ui.Container()
+            empty_container.add_item(
+                discord.ui.TextDisplay(f"## {division_info.emoji} {division_info.name}: 0 участников\n\nПусто."))
+            view = discord.ui.LayoutView()
+            view.add_item(empty_container)
+            await interaction.response.send_message(view=view, ephemeral=True)
             return
 
-        async def show_page(
-            page_interaction: discord.Interaction, page: int, is_initial: bool = False
-        ):
-            start = page * members_per_page
-            end = start + members_per_page
+        browser_view = MembersBrowser(members_indexed, division_info)
 
-            layout = discord.ui.LayoutView(timeout=300)
-
-            container = discord.ui.Container()
-            container.add_item(
-                discord.ui.TextDisplay(
-                    f"## {division_info.emoji} {division_info.name}: "
-                    f"{min(total_members, (page + 1) * members_per_page)}"
-                    f"/{total_members} участников"
-                )
-            )
-            container.add_item(discord.ui.Separator())
-
-            container.add_item(
-                discord.ui.TextDisplay(
-                    "\n".join(
-                        [
-                            f"{i}. {RANK_EMOJIS[u.rank or 0]} "
-                            f"`{format_game_id(u.static) if u.static else 'N // A'}`"
-                            f" <@{u.discord_id}> "
-                            f"❯ {u.full_name or 'Без имени'} "
-                            f"❯ {u.position or 'Участник'}"
-                            for i, u in members[start:end]
-                        ]
-                    )
-                )
-            )
-            container.add_item(
-                discord.ui.TextDisplay(f"Страница: `{page + 1}` из `{total_pages + 1}`")
-            )
-
-            container.add_item(discord.ui.Separator())
-
-            action_row = discord.ui.ActionRow()
-            prev_button = discord.ui.Button(
-                emoji="⬅️",
-                style=discord.ButtonStyle.gray,
-                disabled=page <= 0,
-            )
-            prev_button.callback = lambda button_interaction: show_page(
-                button_interaction, page - 1
-            )
-            action_row.add_item(prev_button)
-
-            next_button = discord.ui.Button(
-                emoji="➡️", style=discord.ButtonStyle.gray, disabled=page >= total_pages
-            )
-            next_button.callback = lambda button_interaction: show_page(
-                button_interaction, page + 1
-            )
-            action_row.add_item(next_button)
-            container.add_item(action_row)
-            layout.add_item(container)
-
-            if is_initial:
-                await page_interaction.response.send_message(
-                    view=layout, ephemeral=True
-                )
-            else:
-                await page_interaction.response.edit_message(view=layout)
-
-        await show_page(interaction, 0, is_initial=True)
+        await interaction.response.send_message(view=browser_view, ephemeral=True)
 
 
 async def setup(bot: Bot):
