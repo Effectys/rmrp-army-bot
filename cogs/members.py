@@ -77,7 +77,7 @@ class Members(commands.Cog):
             )
             return
 
-        members = (await User.find(User.division == division_id).to_list())[:206]
+        members = await User.find(User.division == division_id).to_list()
         members_per_page = 25
 
         def member_sort_key(u: User):
