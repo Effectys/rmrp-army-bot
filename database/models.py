@@ -33,6 +33,14 @@ class Division(Document):
     emoji: str | None = None
     positions: list[Position] | None = None
 
+    def get_position_by_name(self, name: str) -> Position | None:
+        if not self.positions:
+            return None
+        for pos in self.positions:
+            if pos.name.lower() == name.lower():
+                return pos
+        return None
+
     class Settings:
         name = "divisions"
 

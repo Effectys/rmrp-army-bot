@@ -62,7 +62,8 @@ class TransferModal(discord.ui.Modal):
         if user.rank < min_rank:
             return await interaction.response.send_message(
                 f"### ❌ Отказано в подаче\n"
-                f"В подразделение **{self.destination.abbreviation}** можно вступить только со звания "
+                f"В подразделение **{self.destination.abbreviation}** "
+                f"можно вступить только со звания "
                 f"**{config.RANKS[min_rank]}** и выше.",
                 ephemeral=True,
             )

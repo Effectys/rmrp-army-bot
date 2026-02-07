@@ -28,34 +28,33 @@ async def on_tree_error(
     traceback_info = traceback.format_exc()
     error_id = os.urandom(4).hex()
 
-    try:
-        if isinstance(error, app_commands.CommandOnCooldown):
-            await interaction.response.send_message(
-                f"Команда ещё недоступна! Попробуйте ещё раз через **{error.retry_after:.2f}** сек!",
-                ephemeral=True,
-            )
-        elif isinstance(error, app_commands.MissingPermissions):
-            await interaction.response.send_message("У вас нет прав", ephemeral=True)
-        elif isinstance(error, app_commands.CommandInvokeError) or isinstance(
-            error, str
-        ):
-            embed = discord.Embed(
-                title=f"💀 Произошла ошибка [{error_id}]",
-                description=str(
-                    error.original
-                    if isinstance(error, app_commands.CommandInvokeError)
-                    else error
-                ),
-                color=discord.Color.dark_grey(),
-            )
-            if interaction.response.is_done():
-                await interaction.followup.send(embed=embed, ephemeral=True)
-            else:
-                await interaction.response.send_message(embed=embed, ephemeral=True)
+    if isinstance(error, app_commands.CommandOnCooldown):
+        await interaction.response.send_message(
+            f"Команда ещё недоступна! Попробуйте ещё раз "
+            f"через **{error.retry_after:.2f}** сек!",
+            ephemeral=True,
+        )
+    elif isinstance(error, app_commands.MissingPermissions):
+        await interaction.response.send_message("У вас нет прав", ephemeral=True)
+    elif isinstance(error, app_commands.CommandInvokeError) or isinstance(
+        error, str
+    ):
+        logging.error(f"[{error_id}] Error: {traceback_info}")
+        embed = discord.Embed(
+            title=f"💀 Произошла ошибка [{error_id}]",
+            description=str(
+                error.original
+                if isinstance(error, app_commands.CommandInvokeError)
+                else error
+            ),
+            color=discord.Color.dark_grey(),
+        )
+        if interaction.response.is_done():
+            await interaction.followup.send(embed=embed, ephemeral=True)
         else:
-            logging.warning(f"[{error_id}] Error: {error}")
-            await interaction.response.send_message(
-                f"### Произошла ошибка [{error_id}]", ephemeral=True
-            )
-    except:
-        logging.error(f"[{error_id}] Unhandled error:", traceback_info)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+    else:
+        logging.error(f"[{error_id}] Error: {traceback_info}")
+        await interaction.response.send_message(
+            f"### Произошла ошибка [{error_id}]", ephemeral=True
+        )
