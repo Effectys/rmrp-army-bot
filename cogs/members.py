@@ -42,7 +42,7 @@ class MembersBrowser(discord.ui.LayoutView):
             f"`{format_game_id(u.static) if u.static else 'N // A'}` "
             f"<@{u.discord_id}> "
             f"❯ {u.full_name or 'Без имени'} "
-            f"❯ {u.position or 'Участник'}"
+            f"❯ {u.position or 'Без должности'}"
             for i, u in current_slice
         ])
 
