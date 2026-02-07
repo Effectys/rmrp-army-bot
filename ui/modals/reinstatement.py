@@ -63,7 +63,7 @@ class ReinstatementModal(discord.ui.Modal, title="Заявление на вос
         view.add_item(ApproveReinstatementButton(request_id=request.id))
         view.add_item(RejectReinstatementButton(request_id=request.id))
         await interaction.channel.send(
-            f"-# ||<@&{division.role_id}>||", embed=await request.to_embed(), view=view
+            f"-# ||<@&{division.role_id}> <@{interaction.user.id}>||", embed=await request.to_embed(), view=view
         )
 
         from cogs.reinstatement import update_bottom_message
