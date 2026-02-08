@@ -223,7 +223,7 @@ class DismissalManagementButton(
                             roles_to_remove.append(role)
 
                     from database import divisions
-
+                    member_role_ids = [r.id for r in target_member.roles]
                     for div in divisions.divisions:
                         role = interaction.guild.get_role(div.role_id)
                         if role and role in target_member.roles:
@@ -232,7 +232,7 @@ class DismissalManagementButton(
                         if not div.positions:
                             continue
                         for pos in div.positions:
-                            if pos.role_id not in target_member.roles:
+                            if pos.role_id not in member_role_ids:
                                 continue
 
                             pos_role = interaction.guild.get_role(pos.role_id)
