@@ -449,10 +449,16 @@ class TransferRequest(Document):
         embed.add_field(
             name="Номер паспорта", value=format_game_id(self.static), inline=True
         )
+
+        if user and user.rank is not None:
+            rank_display = f"{config.RANK_EMOJIS[user.rank]} {config.RANKS[user.rank]}"
+        else:
+            rank_display = "Гражданский (Уволен)"
+
         embed.add_field(
             name="Звание",
-            value=config.RANK_EMOJIS[user.rank] + " " + config.RANKS[user.rank],
-            inline=True,
+            value=rank_display,
+            inline=False,
         )
         embed.add_field(
             name="Возраст и имя в реальной жизни", value=self.name_age, inline=False
