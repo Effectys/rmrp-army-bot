@@ -152,7 +152,7 @@ class SupplyAccessModal(discord.ui.Modal, title="Заявление на дос�
         )
         await request.create()
 
-        # Тегаем автора + Полковника и выше
+        # Тегаем автора + Подполковника и выше
         colonel_mentions = " ".join(
             f"<@&{role_id}>"
             for rank, role_id in config.RANK_ROLES.items()
@@ -241,11 +241,11 @@ class GovEmployeeModal(discord.ui.Modal, title="Заявление на роль
         )
         await request.create()
 
-        # Тегаем автора + Полковника и выше
+        # Тегаем автора + Подплковника и выше
         colonel_mentions = " ".join(
             f"<@&{role_id}>"
             for rank, role_id in config.RANK_ROLES.items()
-            if config.RANKS.index(rank) >= config.RankIndex.COLONEL
+            if config.RANKS.index(rank) >= config.RankIndex.LIEUTENANT_COLONEL
         )
 
         view = discord.ui.View(timeout=None)
