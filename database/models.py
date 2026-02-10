@@ -7,7 +7,7 @@ from beanie import Document, Indexed
 from pydantic import BaseModel, Field
 
 import config
-from utils.user_data import format_game_id
+from utils.user_data import format_game_id, display_rank
 
 
 class Privilege(Enum):
@@ -149,7 +149,7 @@ class ReinstatementRequest(Document):
 
         if self.rank is not None:
             e.add_field(
-                name="Полученное звание", value=config.RANKS[self.rank], inline=False
+                name="Полученное звание", value=display_rank(self.rank), inline=False
             )
 
         return e
@@ -354,12 +354,7 @@ class DismissalRequest(Document):
             name="Номер паспорта", value=format_game_id(self.static), inline=True
         )
 
-        rank_name = (
-            (config.RANK_EMOJIS[self.rank_index] + " " + config.RANKS[self.rank_index])
-            if self.rank_index is not None
-            else "Нет"
-        )
-        embed.add_field(name="Звание", value=rank_name, inline=False)
+        embed.add_field(name="Звание", value=display_rank(self.rank_index), inline=False)
 
         div_name = (
             divisions.get_division_name(self.division_id) if self.division_id else "Нет"
@@ -449,15 +444,9 @@ class TransferRequest(Document):
         embed.add_field(
             name="Номер паспорта", value=format_game_id(self.static), inline=True
         )
-
-        if user and user.rank is not None:
-            rank_display = f"{config.RANK_EMOJIS[user.rank]} {config.RANKS[user.rank]}"
-        else:
-            rank_display = "Гражданский (Уволен)"
-
         embed.add_field(
             name="Звание",
-            value=rank_display,
+            value=display_rank(user.rank),
             inline=False,
         )
         embed.add_field(

@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from bot import Bot
 from database import divisions
 from database.models import User
-from utils.user_data import format_game_id
+from utils.user_data import format_game_id, display_rank
 
 
 class AuditAction(StrEnum):
@@ -107,11 +107,9 @@ class AuditLogger:
             inline=False,
         )
         if target_info and target_info.rank is not None:
-            rank_emoji = config.RANK_EMOJIS[target_info.rank]
-            rank_name = config.RANKS[target_info.rank]
             embed.add_field(
                 name="Звание",
-                value=f"{rank_emoji} {rank_name}",
+                value=display_rank(target_info.rank),
                 inline=False,
             )
         if target_info and target_info.division is not None:

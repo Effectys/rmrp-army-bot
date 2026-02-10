@@ -2,7 +2,7 @@ import discord
 
 import config
 from database.models import User
-from utils.user_data import format_game_id, formatted_static_to_int
+from utils.user_data import format_game_id, formatted_static_to_int, display_rank
 
 
 class StaticInputModal(discord.ui.Modal, title="Введите ваш статик"):
@@ -55,7 +55,7 @@ class StaticInputModal(discord.ui.Modal, title="Введите ваш стати
             )
             embed.add_field(
                 name="Звание",
-                value=config.RANKS[user.rank] if user.rank is not None else "Нет",
+                value=display_rank(user.rank),
                 inline=False,
             )
             embed.add_field(

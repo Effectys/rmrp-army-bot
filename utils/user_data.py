@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import discord
 
+import config
 from utils.exceptions import StaticInputRequired
 
 if TYPE_CHECKING:
@@ -128,3 +129,11 @@ async def get_initiator(interaction: discord.Interaction) -> User | None:
         raise StaticInputRequired()
 
     return initiator
+
+
+def display_rank(rank_index: int | None) -> str:
+    """Возвращает "Эмодзи Название ранга" или "Без звания", если ранг невалиден."""
+    if rank_index is not None and 0 <= rank_index < len(config.RANKS):
+        return f"{config.RANK_EMOJIS[rank_index]} {config.RANKS[rank_index]}"
+
+    return "Без звания"
