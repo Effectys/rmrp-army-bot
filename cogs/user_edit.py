@@ -91,11 +91,16 @@ class UserEdit(commands.Cog):
                 )
                 new_nick = f"Уволен | {full_name}"
             else:
+                division = divisions.get_division(user_info.division)
+
                 roles = to_division(roles, user_info.division)
                 roles = to_rank(roles, user_info.rank)
                 roles = to_position(roles, user_info.division, user_info.position)
 
-                new_nick = user_info.discord_nick
+                if division.abbreviation == "ССО":
+                    new_nick = member.display_name
+                else:
+                    new_nick = user_info.discord_nick
 
             new_nick = new_nick[:32]
 
