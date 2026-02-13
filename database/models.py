@@ -7,7 +7,7 @@ from beanie import Document, Indexed
 from pydantic import BaseModel, Field
 
 import config
-from utils.user_data import format_game_id, display_rank
+from utils.user_data import format_game_id, display_rank, transliterate_abbreviation
 
 
 class Privilege(Enum):
@@ -90,7 +90,10 @@ class User(Document):
         if self.division is not None:
             div = divisions.get_division(self.division)
             if div:
-                parts.append(div.abbreviation)
+                if div.abbreviation == "ВА":
+                    parts.append(div.abbreviation)
+                else:
+                    parts.append(transliterate_abbreviation(div.abbreviation))
         if self.rank is not None:
             parts.append(config.RANKS_SHORT[self.rank])
         if self.full_name:
