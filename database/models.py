@@ -313,6 +313,7 @@ class SupplyRequest(Document):
 class DismissalType(str, Enum):
     PJS = "ПСЖ"
     TRANSFER = "Перевод"
+    AUTO = "Потеря спец. связи"
 
 
 class DismissalRequest(Document):
@@ -343,8 +344,13 @@ class DismissalRequest(Document):
             self.status, ("❓", discord.Color.default())
         )
 
+        if self.type == DismissalType.AUTO:
+            title_text = "Автоматический рапорт на увольнение"
+        else:
+            title_text = "Рапорт на увольнение"
+
         embed = discord.Embed(
-            title=f"{title_prefix} Рапорт на увольнение #{self.id}",
+            title=f"{title_prefix} {title_text} #{self.id}",
             color=color,
             timestamp=self.created_at,
         )
