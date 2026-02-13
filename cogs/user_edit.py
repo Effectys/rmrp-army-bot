@@ -7,7 +7,7 @@ from discord.ext import commands
 
 import config
 from bot import Bot
-from config import RANK_EMOJIS, RANKS
+from config import RANK_EMOJIS, RANKS, EXCLUDED_ROLES
 from database import divisions
 from database.models import User
 from utils.audit import AuditAction, audit_logger
@@ -78,11 +78,12 @@ class UserEdit(commands.Cog):
         try:
             roles = member.roles
 
-            roles = to_division(roles, user_info.division)
-            roles = to_rank(roles, user_info.rank)
-            roles = to_position(roles, user_info.division, user_info.position)
-
             if user_info.rank is None:
+                roles = [
+                    role for role in roles
+                    if role.is_default() or role.id in EXCLUDED_ROLES or not role.is_assignable()
+                ]
+
                 full_name = (
                     user_info.full_name
                     if (len(user_info.full_name) + 9) <= 32
@@ -90,6 +91,10 @@ class UserEdit(commands.Cog):
                 )
                 new_nick = f"Уволен | {full_name}"
             else:
+                roles = to_division(roles, user_info.division)
+                roles = to_rank(roles, user_info.rank)
+                roles = to_position(roles, user_info.division, user_info.position)
+
                 new_nick = user_info.discord_nick
 
             new_nick = new_nick[:32]

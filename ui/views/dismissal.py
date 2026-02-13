@@ -5,7 +5,7 @@ import re
 import discord
 
 import config
-from config import INVESTIGATION_ROLE, PENALTY_ROLES
+from config import INVESTIGATION_ROLE, PENALTY_ROLES, EXCLUDED_ROLES
 from database.models import Blacklist, DismissalRequest, DismissalType, User
 from ui.modals.dismissal import DismissalModal
 from utils.audit import AuditAction, audit_logger
@@ -215,34 +215,14 @@ class DismissalManagementButton(
             target_member = await interaction.client.getch_member(req.user_id)
             if target_member:
                 try:
-                    roles_to_remove = []
-
-                    for r_name, r_id in config.RANK_ROLES.items():
-                        role = interaction.guild.get_role(r_id)
-                        if role and role in target_member.roles:
-                            roles_to_remove.append(role)
-
-                    from database import divisions
-                    member_role_ids = [r.id for r in target_member.roles]
-                    for div in divisions.divisions:
-                        role = interaction.guild.get_role(div.role_id)
-                        if role and role in target_member.roles:
-                            roles_to_remove.append(role)
-
-                        if not div.positions:
-                            continue
-                        for pos in div.positions:
-                            if pos.role_id not in member_role_ids:
-                                continue
-
-                            pos_role = interaction.guild.get_role(pos.role_id)
-                            if pos_role and pos_role in target_member.roles:
-                                roles_to_remove.append(pos_role)
-
-                    for role_enum in config.RoleId:
-                        role = interaction.guild.get_role(role_enum.value)
-                        if role and role in target_member.roles:
-                            roles_to_remove.append(role)
+                    roles_to_remove = [
+                        role for role in target_member.roles
+                        if (
+                                not role.is_default()
+                                and role.id not in EXCLUDED_ROLES
+                                and role.is_assignable()
+                        )
+                    ]
 
                     if roles_to_remove:
                         await target_member.remove_roles(
