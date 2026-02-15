@@ -9,7 +9,7 @@ from bot import Bot
 from config import RANK_EMOJIS, RANKS, RankIndex
 from database import divisions
 from database.models import User
-from utils.user_data import format_game_id, get_initiator
+from utils.user_data import format_game_id, get_initiator, display_rank
 
 logger = logging.getLogger(__name__)
 
@@ -104,7 +104,7 @@ class Members(commands.Cog):
         if (editor_db.rank or 0) < MIN_RANK:
             await interaction.response.send_message(
                 f"❌ Доступ к просмотру участников подразделений доступен "
-                f"со звания {RANK_EMOJIS[MIN_RANK]} {RANKS[MIN_RANK]}.",
+                f"со звания {display_rank(MIN_RANK)}.",
                 ephemeral=True,
             )
             return None
@@ -120,7 +120,7 @@ class Members(commands.Cog):
         division=[
             app_commands.Choice(name=div.name, value=str(div.division_id))
             for div in divisions.divisions
-        ]
+            ] + [app_commands.Choice(name="Без подразделения", value="none")]
     )
     async def members_handler(
         self,
@@ -129,6 +129,32 @@ class Members(commands.Cog):
     ):
         editor_db = await self._check_permissions(interaction)
         if not editor_db:
+            return
+
+        if division and division.value == "none":
+            members = await User.find(User.division == None).to_list()  # noqa: E711
+            members.sort(key=lambda u: u.rank or 0, reverse=True)
+            members_indexed = list(enumerate(members, start=1))
+
+            class _NoDivisionInfo:
+                name = "Без подразделения"
+                emoji = "🚫"
+
+                def get_position_by_name(self, _):
+                    return None
+
+            if not members:
+                empty_container = discord.ui.Container()
+                empty_container.add_item(
+                    discord.ui.TextDisplay("## 🚫 Без подразделения: 0 участников\n\nПусто.")
+                )
+                view = discord.ui.LayoutView()
+                view.add_item(empty_container)
+                await interaction.response.send_message(view=view, ephemeral=True)
+                return
+
+            browser_view = MembersBrowser(members_indexed, _NoDivisionInfo())
+            await interaction.response.send_message(view=browser_view, ephemeral=True)
             return
 
         division_id = int(division.value) if division else None
@@ -174,7 +200,6 @@ class Members(commands.Cog):
             return
 
         browser_view = MembersBrowser(members_indexed, division_info)
-
         await interaction.response.send_message(view=browser_view, ephemeral=True)
 
 

@@ -7,7 +7,7 @@ from discord.ext import commands
 
 import config
 from bot import Bot
-from config import RANK_EMOJIS, RANKS, EXCLUDED_ROLES
+from config import RANK_EMOJIS, RANKS, EXCLUDED_ROLES, RankIndex
 from database import divisions
 from database.models import User
 from utils.audit import AuditAction, audit_logger
@@ -18,7 +18,7 @@ from utils.notifications import (
     notify_promoted,
 )
 from utils.roles import to_division, to_position, to_rank
-from utils.user_data import format_game_id, get_initiator
+from utils.user_data import format_game_id, get_initiator, display_rank
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +56,7 @@ class UserEdit(commands.Cog):
         if (editor_db.rank or 0) < 11:
             await interaction.response.send_message(
                 f"❌ Доступ к управлению кадрами разрешен "
-                f"со звания {RANK_EMOJIS[11]} {RANKS[11]}.",
+                f"со звания {display_rank(RankIndex.CAPTAIN)}.",
                 ephemeral=True,
             )
             return False
