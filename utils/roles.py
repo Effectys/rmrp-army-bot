@@ -44,9 +44,13 @@ def to_rank(initial_roles: list[discord.Role], rank: int | None) -> list[Role]:
     target_role_ids = set()
 
     if rank is not None:
-        target_role_ids.add(config.RoleId.MILITARY.value)
+        target_role_ids.add(RoleId.MILITARY.value)
         if rank >= 4:
             target_role_ids.add(RoleId.CONTRACT.value)
+        if rank == config.RankIndex.MAJOR:
+            target_role_ids.update([RoleId.BRIGADE_HQ.value, RoleId.UNIT_DEPUTY_COMMANDER.value])
+        if rank >= config.RankIndex.LIEUTENANT_COLONEL:
+            target_role_ids.update([RoleId.BRIGADE_HQ.value, RoleId.GENERAL_HQ.value, RoleId.UNIT_COMMANDER.value])
         target_role_ids.add(config.RANK_ROLES[config.RANKS[rank]])
 
     roles_to_remove = set(config.RANK_ROLES.values())
