@@ -404,6 +404,18 @@ class SupplyManageButton(
             return
 
         user = await get_initiator(interaction)
+
+        if self.action == "edit":
+            if user.discord_id != req.user_id and (user.rank or 0) < 12:
+                await interaction.response.send_message(
+                    "❌ У вас недостаточно прав для этого действия (Требуется: Майор+).",
+                    ephemeral=True,
+                )
+                return
+            await handle_edit(interaction, req)
+            return
+
+
         # Проверка прав: Майор и выше. Индекс Майора = 12
         if (user.rank or 0) < 12:
             await interaction.response.send_message(
@@ -416,8 +428,6 @@ class SupplyManageButton(
             await handle_approve(interaction, req)
         elif self.action == "reject":
             await handle_reject(interaction, req)
-        elif self.action == "edit":
-            await handle_edit(interaction, req)
 
 
 class SupplyManagementView(discord.ui.View):
