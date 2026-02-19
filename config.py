@@ -109,6 +109,7 @@ CHANNELS = (
         "storage_audit": 1246119396225843261,
         "dismissal": 1246119825487564981,
         "static_log": 1246123219006787636,
+        "timeoff": 1246119743602299022,
     }
     if IS_PRODUCTION
     else {
@@ -120,6 +121,7 @@ CHANNELS = (
         "storage_audit": 1460316457291354112,
         "dismissal": 1460316577449906196,
         "static_log": 1460316549331288342,
+        "timeoff": 1460316491340841179,
     }
 )
 

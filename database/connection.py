@@ -13,7 +13,7 @@ from database.models import (
     RoleRequest,
     SupplyRequest,
     TransferRequest,
-    User,
+    User, TimeoffRequest,
 )
 
 _IS_INITIALIZED = False
@@ -27,6 +27,7 @@ MODELS = [
     DismissalRequest,
     TransferRequest,
     Counter,
+    TimeoffRequest
 ]
 
 

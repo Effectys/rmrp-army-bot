@@ -256,6 +256,50 @@ class RoleRequest(Document):
     class Settings:
         name = "role_requests"
 
+class TimeoffRequest(Document):
+    id: int
+    user_id: int
+    data: RoleData | None = None
+    approved: bool = False
+    checked: bool = False
+    period: str | None = None
+    sent_at: datetime.datetime = Field(default_factory=datetime.datetime.now)
+    reviewed_at: datetime.datetime | None = None
+
+    async def to_embed(self):
+        emoji = "✅" if self.approved else "❌" if self.checked else "⏳"
+        colour = (
+            discord.Colour.dark_green()
+            if self.approved
+            else discord.Colour.dark_red()
+            if self.checked
+            else discord.Colour.gold()
+        )
+
+        e = discord.Embed(
+            title=f"{emoji} Заявление на отгул #{self.id}",
+            colour=colour,
+            timestamp=self.sent_at,
+        )
+
+        e.add_field(name="Заявитель", value=self.data.full_name)
+        e.add_field(name="Статик", value=format_game_id(self.data.static_id))
+
+        requester = await User.find_one(User.discord_id == self.user_id)
+        from database import divisions
+        division = divisions.get_division(requester.division)
+
+        e.add_field(name="Звание", value=display_rank(requester.rank))
+        e.add_field(name="Подразделение", value=division.name, inline=False)
+        e.add_field(name="Время", value=self.period)
+
+
+        e.set_footer(text="Отправлено")
+        return e
+
+    class Settings:
+        name = "timeoff_requests"
+
 
 class SupplyRequest(Document):
     id: int
