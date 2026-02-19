@@ -176,17 +176,12 @@ async def notify_timeoff_approved(bot, user_id: int) -> bool:
     )
     return await _send_dm(bot, user_id, embed)
 
-async def notify_timeoff_rejected(
-    bot, user_id: int, reason: Optional[str] = None
-) -> bool:
+async def notify_timeoff_rejected(bot, user_id: int) -> bool:
     """Уведомление об отклонении заявки на отгул."""
-    description = f"Ваша заявка на отгул была отклонена."
-    if reason:
-        description += f"\n\n**Причина:** {reason}"
 
     embed = discord.Embed(
         title=f"{action_emojis[AuditAction.DISMISSED]} Заявка отклонена",
-        description=description,
+        description=f"Ваша заявка на отгул была отклонена.",
         color=discord.Color.red(),
     )
     return await _send_dm(bot, user_id, embed)

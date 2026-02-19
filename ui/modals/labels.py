@@ -36,7 +36,7 @@ def screenshot_label(element: str):
         ),
     )
 
-def period():
+def period_label():
     return discord.ui.TextInput(
         label="Период", placeholder="17:00 - 18:00", max_length=25
     )

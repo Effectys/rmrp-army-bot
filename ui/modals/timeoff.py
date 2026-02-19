@@ -10,16 +10,13 @@ from database.models import (
 )
 from ui.modals.labels import (
     name_component,
-    static_label,
-    period,
+    period_label,
 )
 from ui.views.timeoff import ApproveTimeoffButton, RejectTimeoffButton, TimeoffCancelButton
-from utils.user_data import formatted_static_to_int
-
 
 class TimeoffRequestModal(discord.ui.Modal, title="Заявление на отгул"):
     name = name_component()
-    period = period()
+    period = period_label()
 
     def __init__(self, user_name: str | None):
         super().__init__()

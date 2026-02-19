@@ -7,8 +7,8 @@ from discord import Interaction, InteractionResponse
 from discord._types import ClientT
 
 import config
-import texts
 from database.models import TimeoffRequest
+from texts import timeoff_title, timeoff_submission, timeoff_description
 from ui.views.indicators import indicator_view
 from utils.exceptions import StaticInputRequired
 from utils.notifications import notify_timeoff_approved, notify_timeoff_rejected
@@ -94,13 +94,9 @@ class TimeoffApplyView(discord.ui.LayoutView):
         super().__init__(timeout=None)
 
     container = discord.ui.Container()
-    container.add_item(discord.ui.TextDisplay("# Подача заявления на отгул"))
-    container.add_item(discord.ui.TextDisplay("### Подача заявления\nЧтобы подать заявление на отгул воспользуйтесь "
-                                              "кнопкой снизу."))
-    container.add_item(discord.ui.TextDisplay("""### Информация
-        1. Заявления доступны со звания Старший сержант.
-        2. Заявления можно подать только на сегодняшний день.
-        3. Разрешено брать отгул только один раз в день."""))
+    container.add_item(discord.ui.TextDisplay(timeoff_title))
+    container.add_item(discord.ui.TextDisplay(timeoff_submission))
+    container.add_item(discord.ui.TextDisplay(timeoff_description))
 
     container.add_item(discord.ui.Separator(visible=True))
 
